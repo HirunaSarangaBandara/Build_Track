@@ -1,5 +1,5 @@
 body {
-  background: linear-gradient(to right, #005c97, #363795);
+  background: url("../assets/login-bg.jpg") no-repeat center center/cover;
   font-family: "Segoe UI", sans-serif;
   margin: 0;
   height: 100vh;
@@ -9,54 +9,115 @@ body {
 }
 
 .login-container {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
   padding: 40px;
-  border-radius: 10px;
-  width: 350px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  width: 380px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #1a1a1a;
+  transition: all 0.3s ease-in-out;
+}
+
+.login-container:hover {
+  transform: scale(1.02);
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
+}
+
+.login-form h1 {
+  text-align: center;
+  font-size: 24px;
+  color: #3020ba;
+  margin-bottom: 5px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .login-form h2 {
   text-align: center;
-  color: #222;
+  font-size: 18px;
+  color: #3020ba;
   margin-bottom: 15px;
 }
 
 .login-form input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 15px;
-}
-
-.login-form input:focus {
-  border-color: #363795;
-  outline: none;
-}
-
-.login-form button {
-  padding: 10px;
-  background-color: #363795;
-  color: white;
+  padding: 12px;
   border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
+  border-radius: 8px;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #222;
+  outline: none;
   transition: 0.3s;
 }
 
+.login-form input::placeholder {
+  color: #555;
+}
+
+.login-form input:focus {
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(0, 92, 151, 0.6);
+}
+
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.password-field span {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #005c97;
+  user-select: none;
+  transition: 0.2s;
+}
+
+.password-field span:hover {
+  color: #002f5e;
+}
+
+.login-form button {
+  padding: 12px;
+  background: linear-gradient(to right, #005c97, #363795);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
 .login-form button:hover {
-  background-color: #005c97;
+  background: linear-gradient(to right, #363795, #005c97);
+  transform: translateY(-2px);
+}
+
+.login-form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error {
-  color: red;
+  color: #ffdddd;
+  background: rgba(255, 0, 0, 0.15);
   font-size: 14px;
   text-align: center;
+  padding: 8px;
+  border-radius: 5px;
 }
