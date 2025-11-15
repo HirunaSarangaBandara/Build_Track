@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../services/auth";
+import API from "../services/api";
 import "../styles/login.css";
 
 function Login() {
@@ -22,48 +22,62 @@ function Login() {
 
     setLoading(true);
     try {
-      await login(username, password);
+      const res = await API.post("/auth/login", { username, password });
+
+      // store token, role, and username
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
+      localStorage.setItem("username", res.data.username);
+
+      // redirect to dashboard
       navigate("/dashboard");
     } catch (err) {
-      setError("Invalid credentials. Please try again.");
+      const msg =
+        err.response?.data?.message || "Invalid credentials. Please try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h1>Welcome to BuildTrack!</h1>
-        <h2>Login</h2>
+    <div className="login-page">
+      <div className="login-container">
+        <form className="login-form" onSubmit={handleSubmit}>
+          <h1>Welcome to BuildTrack!</h1>
+          <h2>Login</h2>
 
-        <input
-          type="text"
-          placeholder="Enter Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-
-        <div className="password-field">
           <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="text"
+            placeholder="Enter Email or Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
-          <span onClick={() => setShowPassword(!showPassword)}>
-            {showPassword ? "🙈" : "👁️"}
-          </span>
-        </div>
 
-        {error && <p className="error">{error}</p>}
+          <div className="password-field">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <span
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </span>
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+          {error && <p className="error">{error}</p>}
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

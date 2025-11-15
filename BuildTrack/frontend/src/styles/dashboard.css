@@ -1,67 +1,85 @@
-body {
-  margin: 0;
+.dashboard {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
   font-family: "Segoe UI", sans-serif;
-  background-color: #f3f4f8;
 }
 
-.dashboard-header {
-  background: #363795;
-  color: white;
-  padding: 15px 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.dashboard-title {
+  color: #003366;
+  margin-bottom: 20px;
 }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+  width: 100%;
 }
 
-.user-info button {
+.stats-card {
   background: white;
-  color: #363795;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.dashboard-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 30px;
-  gap: 20px;
-}
-
-.card {
-  background: white;
+  padding: 25px;
   border-radius: 10px;
-  width: 280px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-  transition: 0.3s;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
 }
 
-.card:hover {
+.stats-card:hover {
   transform: translateY(-5px);
 }
 
-.card button {
-  background-color: #363795;
-  border: none;
-  color: white;
-  border-radius: 5px;
-  padding: 8px 12px;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: 0.3s;
+.stats-card h3 {
+  color: #003366;
+  margin-bottom: 8px;
 }
 
-.card button:hover {
-  background-color: #005c97;
+.value {
+  font-size: 30px;
+  font-weight: bold;
+  color: #0055aa;
+  margin-bottom: 4px;
+}
+
+.dashboard-section {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.dashboard-section h2 {
+  color: #003366;
+  margin-bottom: 15px;
+}
+
+.dashboard-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.dashboard-section li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* ✅ Full-width responsive behavior */
+@media (min-width: 1200px) {
+  .main-container {
+    padding: 40px 60px; /* More breathing room on PC */
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
