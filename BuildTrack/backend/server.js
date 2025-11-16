@@ -15,13 +15,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// --- ROUTES ---
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const laborRoutes = require("./routes/laborRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/labors", laborRoutes);
 
-// Server
+app.get("/", (req, res) => res.send("BuildTrack API is running..."));
+
+// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
