@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import SitesTasks from "./pages/SitesTasks";
 import LaborManagement from "./pages/LaborManagement";
-import Inventory from "./pages/Inventory";
+import Inventory from "./pages/InventoryManagement";
 import Communication from "./pages/Communication";
 import Reports from "./pages/Reports";
 import Layout from "./components/Layout";

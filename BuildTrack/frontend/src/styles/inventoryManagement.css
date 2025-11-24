@@ -1,0 +1,242 @@
+/* General Page Layout */
+.inventory-page {
+  background-color: #f4f7fb;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 100px 40px 40px; 
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.inventory-page h1 {
+  color: #004aad;
+  font-size: 26px;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* --- Toggle Button --- */
+.btn-toggle-form {
+    background: #009688;
+    color: #fff;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto 30px;
+}
+
+.btn-toggle-form:hover {
+    background: #00796b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Add/Update Forms Styling --- */
+.inventory-add-form,
+.inventory-update-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 35px;
+  justify-content: space-between;
+}
+
+/* --- ADMIN PERMISSION MESSAGE STYLES (Used when non-admin loads the page) --- */
+.inventory-add-form.permission-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 20px;
+  border: 1px dashed #c00;
+  background-color: #fff0f0;
+}
+
+.inventory-add-form.permission-message p {
+  color: #c00;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+/* --- END PERMISSION MESSAGE STYLES --- */
+
+.inventory-add-form h2,
+.inventory-update-form h2 {
+    color: #004aad;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.inventory-add-form input,
+.inventory-add-form select,
+.inventory-update-form input {
+  flex: 1 1 200px; 
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.inventory-add-form button,
+.inventory-update-form button {
+  flex: 1 1 150px;
+  background: #004aad;
+  color: #fff;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.inventory-update-form button.cancel-btn {
+    background: #ccc;
+    color: #333;
+}
+.inventory-update-form button.cancel-btn:hover {
+    background: #aaa;
+}
+
+
+/* --- Inventory Grid --- */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.inventory-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-top: 6px solid #009688;
+  position: relative;
+}
+
+.inventory-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.inventory-card h3 {
+  margin-bottom: 10px;
+  color: #002b5b;
+  font-size: 20px;
+}
+
+.inventory-card p {
+  margin: 8px 0;
+  color: #444;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.inventory-card strong {
+    color: #333;
+}
+
+/* --- Availability Status Tags --- */
+.inventory-status {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+}
+
+.status-in { background-color: #e6ffee; color: #009688; }
+.status-low { background-color: #fffbe6; color: #ff9800; }
+.status-out { background-color: #ffe6e6; color: #c00; }
+
+/* --- Action Buttons Container --- */
+.inventory-actions {
+    margin-top: 15px; /* Spacing above actions/view tag */
+}
+
+/* Style for Admin Buttons */
+.inventory-actions > button {
+    flex: 1;
+    padding: 10px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease;
+}
+
+.btn-update-qty,
+.btn-delete {
+    flex: 1;
+}
+
+.btn-update-qty {
+    background: #004aad;
+    color: #fff;
+}
+.btn-update-qty:hover {
+    background: #003a8b;
+}
+
+.btn-delete {
+    background: #ffe6e6;
+    color: #c00;
+}
+
+.btn-delete:hover {
+    background: #ffd2d2;
+}
+
+/* --- VIEW ONLY TAG (For non-admins) --- */
+.view-only-tag {
+    /* Styles for the tag that REPLACES the buttons */
+    background: #f0f0f0;
+    color: #777;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- Media Queries --- */
+@media (max-width: 768px) {
+  .inventory-page {
+    padding: 90px 20px;
+  }
+  
+  .inventory-add-form,
+  .inventory-update-form {
+    flex-direction: column;
+  }
+
+  .inventory-add-form input,
+  .inventory-add-form select,
+  .inventory-update-form input,
+  .inventory-add-form button,
+  .inventory-update-form button {
+    flex: 1 1 100%;
+  }
+}

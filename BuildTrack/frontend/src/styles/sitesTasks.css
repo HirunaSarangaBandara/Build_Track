@@ -1,0 +1,379 @@
+/* General Page Layout (No change) */
+.sites-page {
+    background-color: #f4f7fb;
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 100px 40px 40px; 
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.sites-page h1 {
+    color: #004aad;
+    font-size: 26px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* --- Add/Toggle Button (No change) --- */
+.btn-toggle-form {
+    background: #009688;
+    color: #fff;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto 30px;
+}
+.btn-toggle-form:hover {
+    background: #00796b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Form Styles & Permission Message (No change) --- */
+.site-add-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin: 0 auto 35px;
+    max-width: 800px;
+}
+
+.permission-message {
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    border: 1px dashed #c00;
+    background-color: #fff0f0;
+    text-align: center;
+}
+
+.site-add-form h2 {
+    color: #004aad;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.site-add-form input,
+.site-add-form select,
+.site-add-form textarea {
+    flex: 1 1 300px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.site-add-form textarea {
+    flex: 1 1 100%;
+    resize: vertical;
+}
+
+.site-add-form button {
+    background: linear-gradient(90deg, #004aad, #0077cc);
+    color: #fff;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    flex: 1 1 100%;
+}
+
+/* --- Site Cards List --- */
+.site-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 15px;
+}
+
+.site-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-left: 6px solid #004aad;
+    overflow: hidden;
+}
+
+.site-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.site-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.site-card h3 {
+    margin-bottom: 5px;
+    color: #002b5b;
+    font-size: 20px;
+}
+
+.card-content p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.progress-value {
+    font-weight: bold;
+    color: #009688;
+    margin-left: 5px;
+}
+
+/* --- Team List Display Styles --- */
+.team-list {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #eee;
+}
+
+.team-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.team-list li {
+    background-color: #f0f8ff;
+    color: #004aad;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.unassigned-message {
+    color: #888;
+    font-style: italic;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.status-active { background-color: #e6ffee; color: #009688; }
+.status-completed { background-color: #e8f0ff; color: #004aad; }
+.status-onhold { background-color: #fffbe6; color: #ff9800; }
+.status-planned { background-color: #f0f0f0; color: #555; }
+
+
+/* Latest Update Comment (No change) */
+.latest-update {
+    background-color: #f9f9f9;
+    border-left: 3px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #444;
+}
+
+.latest-update small {
+    display: block;
+    color: #999;
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+/* --- Action Buttons --- */
+.site-actions {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+}
+
+.site-actions button {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.btn-update-progress {
+    background: #009688;
+    color: white;
+}
+
+.btn-update-progress:hover {
+    background: #00796b;
+}
+
+.btn-delete {
+    background: #ffe8e8;
+    color: #c00;
+}
+
+.btn-delete:hover {
+    background: #ffd2d2;
+}
+
+/* FIX: Ensure View Only Tag styles correctly */
+.view-only-tag {
+    background: #f0f0f0;
+    color: #777;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    align-self: center;
+}
+
+/* --- MODAL STYLING (Functional Fix) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    /* FIX: Ensure this is visually on top */
+}
+
+.site-update-modal {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    /* FIX: Set display to block to ensure content renders */
+    display: block;
+}
+
+.site-update-modal h3, .site-update-modal h4 {
+    color: #004aad;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.site-update-modal textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+.task-list {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding: 5px 10px;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+}
+
+.task-item {
+    margin: 8px 0;
+}
+
+.task-item label {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    color: #333;
+}
+
+.task-item input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+}
+
+.task-item.completed label {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.modal-actions button[type="submit"] {
+    background: #004aad;
+    color: white;
+}
+
+.modal-actions button[type="button"] {
+    background: #f0f0f0;
+    color: #555;
+}
+
+/* --- Media Queries --- */
+@media (max-width: 768px) {
+  .sites-page {
+    padding: 90px 20px;
+  }
+  
+  .site-add-form {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .site-add-form input,
+  .site-add-form select,
+  .site-add-form textarea {
+    flex: 1 1 100%;
+  }
+}

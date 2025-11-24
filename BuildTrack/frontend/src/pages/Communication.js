@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/communication.css"; // ✅ Unique style for this page
+import "../styles/communication.css";
 
 function Communication() {
   const [messages, setMessages] = useState([
@@ -24,7 +24,7 @@ function Communication() {
 
   return (
     <div className="communication-container">
-      <h1>💬 Communication</h1>
+      <h1>Communication</h1>
       <p>Send messages and stay connected with your site team.</p>
 
       <div className="chat-box">

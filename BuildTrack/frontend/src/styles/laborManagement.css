@@ -1,3 +1,4 @@
+/* General Page Layout */
 .labor-page {
   background-color: #f4f7fb;
   min-height: 100vh;
@@ -16,6 +17,7 @@
   font-weight: 600;
 }
 
+/* --- Form Container --- */
 .labor-form {
   display: flex;
   flex-wrap: wrap;
@@ -28,6 +30,24 @@
   justify-content: center;
 }
 
+/* --- NEW: Permission Message Styling --- */
+.labor-form.permission-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 20px;
+  border: 1px dashed #c00;
+  background-color: #fff0f0;
+}
+
+.labor-form.permission-message p {
+  color: #c00;
+  font-size: 16px;
+  font-weight: 500;
+}
+/* --- END NEW STYLES --- */
+
+/* Form Inputs and Selects */
 .labor-form input,
 .labor-form select {
   flex: 1 1 250px;
@@ -61,6 +81,7 @@
   transform: translateY(-2px);
 }
 
+/* --- Labor Cards List --- */
 .labor-card-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
@@ -102,6 +123,7 @@
   font-size: 15px;
 }
 
+/* --- Action Buttons --- */
 .labor-actions {
   display: flex;
   justify-content: flex-end;
@@ -136,6 +158,12 @@
   background: #ffd2d2;
 }
 
+/* Hide emojis/icons from the button text, rely on text only */
+.labor-actions button {
+    /* If you had used emoji placeholders, this would hide them. */
+    /* text-decoration: none; */ 
+}
+
 .no-labors {
   text-align: center;
   color: #777;
@@ -144,6 +172,7 @@
   margin-top: 30px;
 }
 
+/* --- Media Queries --- */
 @media (max-width: 768px) {
   .labor-page {
     padding: 90px 20px;

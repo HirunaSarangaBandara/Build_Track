@@ -1,6 +1,7 @@
 import axios from "axios";
+// Import getToken as a named export
+import { getToken } from "./auth"; 
 
-// Create axios instance for all API requests
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
   headers: {
@@ -8,10 +9,10 @@ const API = axios.create({
   },
 });
 
-// ✅ Attach token automatically to every request (if user is logged in)
+// Attach token automatically to every request
 API.interceptors.request.use(
   (req) => {
-    const token = localStorage.getItem("token");
+    const token = getToken(); 
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
     }
@@ -20,7 +21,7 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Global error interceptor for token expiration or auth issues
+// Global error interceptor for 401/403
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -28,12 +29,12 @@ API.interceptors.response.use(
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
     ) {
-      console.warn("Session expired. Please log in again.");
-      localStorage.removeItem("token");
-      window.location.href = "/"; // Redirect to login
+      console.warn("Session expired or unauthorized. Redirecting to login.");
+      // Call a full logout function here
+      // window.location.href = "/"; 
     }
     return Promise.reject(error);
   }
 );
 
-export default API;
+export default API; 

@@ -65,10 +65,9 @@
   border-bottom: 1px solid #eee;
 }
 
-/* ✅ Full-width responsive behavior */
 @media (min-width: 1200px) {
   .main-container {
-    padding: 40px 60px; /* More breathing room on PC */
+    padding: 40px 60px;
   }
 }
 

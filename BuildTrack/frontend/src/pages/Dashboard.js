@@ -11,7 +11,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
-      <h1 className="dashboard-title">🏗️ BuildTrack Dashboard</h1>
+      <h1 className="dashboard-title">BuildTrack Dashboard</h1>
 
       <div className="stats-grid">
         {stats.map((item, i) => (

@@ -11,6 +11,12 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // --- Store keys used in services/auth.js ---
+  const TOKEN_KEY = 'authToken'; 
+  const ROLE_KEY = 'userRole';
+  const NAME_KEY = 'userName';
+  const ID_KEY = 'userId'; 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -23,12 +29,15 @@ function Login() {
     setLoading(true);
     try {
       const res = await API.post("/auth/login", { username, password });
+      
+      // Destructure necessary data from the successful backend response
+      const { token, role, name, id } = res.data;
 
-      // store token, role, and username
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role);
-      localStorage.setItem("username", res.data.username);
-
+      localStorage.setItem(TOKEN_KEY, token);
+      localStorage.setItem(ROLE_KEY, role); 
+      localStorage.setItem(NAME_KEY, name);
+      localStorage.setItem(ID_KEY, id); 
+      
       // redirect to dashboard
       navigate("/dashboard");
     } catch (err) {

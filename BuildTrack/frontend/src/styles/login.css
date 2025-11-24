@@ -1,8 +1,3 @@
-/* ---------------------------
-   LOGIN PAGE SCOPED STYLES
------------------------------ */
-
-/* Outer background only for login page */
 .login-page {
   background: url("../assets/login-bg.jpg") no-repeat center center/cover;
   font-family: "Segoe UI", sans-serif;
@@ -14,7 +9,6 @@
   align-items: center;
 }
 
-/* Glassmorphic login card */
 .login-container {
   background: rgba(255, 255, 255, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -32,7 +26,6 @@
   transform: scale(1.02);
 }
 
-/* Form layout */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -74,7 +67,6 @@
   box-shadow: 0 0 8px rgba(0, 92, 151, 0.6);
 }
 
-/* Password field */
 .password-field {
   position: relative;
   display: flex;
@@ -100,7 +92,6 @@
   color: #002f5e;
 }
 
-/* Button */
 .login-form button {
   padding: 12px;
   background: linear-gradient(to right, #005c97, #363795);
@@ -123,7 +114,6 @@
   cursor: not-allowed;
 }
 
-/* Error message */
 .error {
   color: #ffdddd;
   background: rgba(255, 0, 0, 0.15);
@@ -133,7 +123,6 @@
   border-radius: 5px;
 }
 
-/* Responsive layout */
 @media (max-width: 480px) {
   .login-container {
     width: 90%;
