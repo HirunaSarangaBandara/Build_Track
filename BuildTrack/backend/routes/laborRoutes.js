@@ -1,31 +1,45 @@
+// routes/laborRoute.js
+
 const express = require("express");
 const router = express.Router();
 const Labor = require("../models/Labor");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const { authorizeRoles } = require('../middleware/authMiddleware'); // Import authorization middleware
 
-// Generate random username & password
+// --- Helper Functions ---
+
+function generatePassword() {
+  try {
+    const plainPassword = crypto.randomBytes(5).toString("hex"); 
+    if (!plainPassword) {
+        throw new Error("Crypto generation returned an empty string."); 
+    }
+    return plainPassword;
+  } catch (err) {
+    console.error("Crypto generation failed, using fallback:", err.message);
+    return Math.random().toString(36).slice(-10); 
+  }
+}
+
 function generateUsername(name) {
   return (
     name.toLowerCase().replace(/\s+/g, "") +
     Math.floor(1000 + Math.random() * 9000)
   );
 }
-function generatePassword() {
-  return crypto.randomBytes(5).toString("hex"); // e.g., "a7b2c1f4e3"
-}
 
-// Setup email transporter
+// Setup email transporter using actual configuration
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
 });
 
-// --- GET all labors ---
+// --- GET all labors (Runs after verifyToken in server.js) ---
 router.get("/", async (req, res) => {
   try {
     const labors = await Labor.find().sort({ createdAt: -1 });
@@ -35,33 +49,26 @@ router.get("/", async (req, res) => {
   }
 });
 
-// --- POST new labor ---
-router.post("/", async (req, res) => {
+// --- POST new labor (ADMIN ONLY) ---
+router.post("/", authorizeRoles('admin'), async (req, res) => {
   const { name, email, role, category, contact, site } = req.body;
 
   try {
-    // Generate credentials
     const username = generateUsername(name);
     const plainPassword = generatePassword();
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    // Save in DB
     const newLabor = new Labor({
-      name,
-      email,
-      username,
+      name, email, username,
       password: hashedPassword,
-      role,
-      category,
-      contact,
-      site,
+      role, category, contact, site,
     });
     await newLabor.save();
 
     // Send email to user
     await transporter.sendMail({
       from: `"BuildTrack Admin" <${process.env.EMAIL_USER}>`,
-      to: email, // Send to that user’s email
+      to: email, 
       subject: "Your BuildTrack Account Credentials",
       html: `
         <h2>Welcome to BuildTrack!</h2>
@@ -80,8 +87,24 @@ router.post("/", async (req, res) => {
     });
   } catch (err) {
     console.error("Error creating user:", err);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: err.message }); 
   }
 });
+
+// --- DELETE labor by ID (ADMIN ONLY) ---
+router.delete("/:id", authorizeRoles('admin'), async (req, res) => {
+    try {
+        const labor = await Labor.findByIdAndDelete(req.params.id);
+
+        if (labor == null) {
+            return res.status(404).json({ message: "Cannot find labor" });
+        }
+
+        res.json({ message: "Labor user deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 
 module.exports = router;
