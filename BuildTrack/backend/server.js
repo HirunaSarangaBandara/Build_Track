@@ -2,9 +2,9 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
-const path = require("path"); // <-- NEW: Import the path module
+const path = require("path"); // Import the path module
 
-// --- Import the JWT Verification Middleware (CRITICAL FIX) ---
+// --- Import the JWT Verification Middleware ---
 const { verifyToken } = require('./middleware/authMiddleware'); 
 
 // Load environment variables
@@ -20,8 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 // --- CRITICAL FIX: Serve the Uploads Folder using ABSOLUTE PATH ---
-// We use path.join(__dirname, 'uploads') to ensure Express finds the folder
-// regardless of the directory from which the 'node server.js' command is run.
+// This serves static files (like site images) from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
 
 // --- ROUTES IMPORTS ---
@@ -31,14 +30,19 @@ const laborRoutes = require("./routes/laborRoutes");
 const inventoryRoutes = require("./routes/InventoryRoutes"); 
 const sitesTasksRoutes = require("./routes/sitesTasksRoutes"); 
 
-app.use("/api/auth", authRoutes); // Login/Register routes are unprotected
+// --- ROUTE IMPLEMENTATION ---
 
-// Apply the JWT verification middleware (verifyToken) to ALL SECURE ROUTES
+// 1. Unprotected Routes (Login, Register)
+app.use("/api/auth", authRoutes); 
+
+// 2. Protected Routes (Require JWT Verification)
+// Apply the verifyToken middleware to all secure routes
 app.use("/api/users", verifyToken, userRoutes);
-app.use("/api/labors", verifyToken, laborRoutes);    
+app.use("/api/labors", verifyToken, laborRoutes); 
 app.use("/api/inventory", verifyToken, inventoryRoutes); 
 app.use("/api/sites", verifyToken, sitesTasksRoutes); 
 
+// Simple root endpoint
 app.get("/", (req, res) => res.send("BuildTrack API is running..."));
 
 // Start Server

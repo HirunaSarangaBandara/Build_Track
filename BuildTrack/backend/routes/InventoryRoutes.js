@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const Inventory = require("../models/Inventory"); 
-// Import authorizeRoles from your middleware file
 const { authorizeRoles } = require('../middleware/authMiddleware'); 
 
 // --- GET All Inventory Items (Everyone can view) ---
@@ -20,6 +19,7 @@ router.post("/", authorizeRoles('admin'), async (req, res) => {
 
   try {
     const newItem = new Inventory({ name, category, quantity, unit });
+    // The pre('save') middleware will run here to set availability
     await newItem.save();
     res.status(201).json(newItem);
   } catch (err) {
@@ -35,10 +35,13 @@ router.patch("/:id", authorizeRoles('admin'), async (req, res) => {
   const updates = { quantity: req.body.quantity };
 
   try {
+    // The pre('findOneAndUpdate') middleware will run here to set availability
     const item = await Inventory.findByIdAndUpdate(
       req.params.id,
       { $set: updates },
-      { new: true, runValidators: true }
+      // { new: true } ensures the updated document is returned
+      // { runValidators: true } ensures schema validation runs
+      { new: true, runValidators: true } 
     );
 
     if (item == null) {

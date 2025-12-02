@@ -80,28 +80,36 @@ const authAdminOrManager = async (req, res, next) => {
 
 // --- ROUTES IMPLEMENTATION ---
 
-// GET All Sites (View) - CRITICAL: Attaches all assigned workers
+// GET All Sites (View) 
 router.get('/', async (req, res) => {
     try {
         const sites = await Site.find().sort({ startDate: -1 });
         
-        // 1. Get all labors that are currently assigned to any site
-        const labors = await Labor.find({ site: { $ne: null, $ne: "" } }).select('name site role category');
+        // 1. Get all labors that are currently assigned to ANY site (Worker or Manager)
+        // Checks if the 'sites' array exists and is not empty.
+        const labors = await Labor.find({ sites: { $exists: true, $ne: [] } }).select('name sites role category _id'); 
         
-        // 2. Map labors to their siteName for efficient lookup (Key: Site Name, Value: [Workers])
-        const siteTeamMap = labors.reduce((acc, labor) => {
-            if (labor.site) {
-                const siteKey = labor.site;
-                if (!acc[siteKey]) acc[siteKey] = [];
-                acc[siteKey].push(labor);
-            }
-            return acc;
-        }, {});
+        // 2. Map labors to their siteName for efficient lookup
+        const siteTeamMap = {};
+        labors.forEach(labor => {
+            // Iterate through the new 'sites' array
+            labor.sites.forEach(siteName => { 
+                if (!siteTeamMap[siteName]) siteTeamMap[siteName] = [];
+                // Attach the labor object (excluding sensitive data like password)
+                siteTeamMap[siteName].push(labor.toObject()); 
+            });
+        });
         
         // 3. Attach worker teams to each site document
         const sitesWithTeams = sites.map(site => {
             const siteObject = site.toObject(); 
-            siteObject.team = siteTeamMap[siteObject.siteName] || []; 
+            
+            // Get all workers and managers assigned to this site
+            const fullTeam = siteTeamMap[siteObject.siteName] || [];
+            
+            // Filter the team to only include Workers for the primary 'team' display on the card
+            siteObject.team = fullTeam.filter(member => member.role === 'Worker');
+            
             return siteObject;
         });
 
@@ -115,6 +123,8 @@ router.get('/', async (req, res) => {
 router.post('/', upload.single('siteImage'), authAdmin, async (req, res) => {
     
     if (req.fileValidationError) {
+        // Delete the file if it was uploaded before validation failed
+        if (req.file) { fs.unlinkSync(req.file.path); } 
         return res.status(400).json({ message: req.fileValidationError });
     }
     
@@ -134,17 +144,28 @@ router.post('/', upload.single('siteImage'), authAdmin, async (req, res) => {
             currentStatus: "Foundation Phase",
         });
         await newSite.save();
+        
+        // Assign the site name to the manager's 'sites' array
+        if (managerId) {
+            // Use $addToSet to prevent duplicate entries if the manager was somehow already assigned
+            await Labor.findByIdAndUpdate(managerId, { $addToSet: { sites: siteName } }); 
+        }
+        
         res.status(201).json(newSite);
     } catch (err) {
-        if (req.file) { fs.unlinkSync(req.file.path); } 
+        // Clean up file on database error
+        if (req.file) { 
+            try { fs.unlinkSync(req.file.path); } catch (cleanupError) { console.error('Error deleting file:', cleanupError); }
+        }
+        console.error(err);
         res.status(400).json({ message: err.message });
     }
 });
 
-// PATCH Update Task/Comment/Manager Reassignment (ADMIN OR ASSIGNED MANAGER)
+// PATCH Update Task/Comment/Manager (Admin/Manager)
 router.patch('/:id', authAdminOrManager, async (req, res) => {
     const siteId = req.params.id;
-    const { taskId, isCompleted, comment, status, managerId, managerName } = req.body;
+    const { taskId, isCompleted, comment, managerId, managerName } = req.body;
     
     const userId = req.user.id;
     const userName = req.user.name; 
@@ -153,17 +174,7 @@ router.patch('/:id', authAdminOrManager, async (req, res) => {
         const site = await Site.findById(siteId);
         if (!site) return res.status(404).json({ message: "Site not found." });
 
-        // 1. Handle Manager Reassignment (Only Admins can set/unset manager fields)
-        if (req.user.role === 'admin' && (managerId !== undefined || managerName !== undefined)) {
-            site.managerId = managerId || null; 
-            site.managerName = managerName || null;
-            
-            if (managerId === null && site.managerId) { 
-                await Labor.findByIdAndUpdate(site.managerId, { site: null });
-            }
-        }
-
-        // 2. Handle Task Completion Update
+        // 1. Handle Task Completion Update
         if (taskId !== undefined) { 
             const task = site.tasks.id(taskId);
             if (!task) return res.status(404).json({ message: "Task not found." });
@@ -171,25 +182,30 @@ router.patch('/:id', authAdminOrManager, async (req, res) => {
             task.isCompleted = isCompleted;
             task.completedAt = isCompleted ? new Date() : null;
             
+            // Update currentStatus based on the next incomplete task
             const nextIncompleteTask = site.tasks.find(t => !t.isCompleted);
             if (nextIncompleteTask) {
                 site.currentStatus = `Working on: ${nextIncompleteTask.name}`;
             } else {
                 site.currentStatus = "All major tasks complete.";
-                site.status = "Completed"; 
             }
         }
         
-        // 3. Handle Comment Addition
+        // 2. Handle Comment Addition
         if (comment) {
             site.updates.push({ userId, userName, comment });
         }
         
-        // 4. Handle Overall Status Change 
-        if (status) {
-            site.status = status;
+        // 3. Handle Manager Re-assignment (Used by Admin in front-end modal)
+        // NOTE: The logic for updating the *old* and *new* manager's Labor.sites array 
+        // should ideally happen in dedicated routes to keep this PATCH simple, 
+        // as implemented in the front-end (handleManagerReassign). 
+        // We only update the Site document here.
+        if (managerId !== undefined && req.user.role === 'admin') {
+            site.managerId = managerId;
+            site.managerName = managerName;
         }
-
+        
         await site.save();
         res.json(site);
     } catch (err) {
@@ -197,7 +213,58 @@ router.patch('/:id', authAdminOrManager, async (req, res) => {
     }
 });
 
-// DELETE Site (ADMIN ONLY) - CRITICAL: Deletes site, unassigns workers, and deletes file
+// Dedicated PATCH route for Site Status Change (Admin/Manager)
+router.patch('/status/:id', authAdminOrManager, async (req, res) => {
+    const siteId = req.params.id;
+    const { status } = req.body;
+    
+    if (!status || !['Planned', 'Active', 'On Hold', 'Completed'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status value provided." });
+    }
+    
+    try {
+        const site = await Site.findByIdAndUpdate(
+            siteId, 
+            { $set: { status: status } },
+            { new: true, runValidators: true }
+        );
+        if (!site) return res.status(404).json({ message: "Site not found." });
+
+        res.json({ message: `Site status updated to ${status}`, site });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
+// PATCH route for Manager Release (ADMIN ONLY) 
+router.patch('/manager-release/:id', authAdmin, async (req, res) => {
+    const siteId = req.params.id;
+    
+    try {
+        const site = await Site.findById(siteId);
+        if (!site) return res.status(404).json({ message: "Site not found." });
+
+        const siteName = site.siteName;
+        const managerId = site.managerId;
+
+        // 1. Unassign manager from the Site document
+        site.managerId = null;
+        site.managerName = null;
+        await site.save();
+
+        // 2. Remove the site name from the manager's Labor.sites array
+        if (managerId) {
+            await Labor.findByIdAndUpdate(managerId, { $pull: { sites: siteName } });
+        }
+
+        res.json({ message: `Manager released from site ${siteName}.` });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// DELETE Site (ADMIN ONLY) 
 router.delete('/:id', authAdmin, async (req, res) => {
     try {
         const site = await Site.findById(req.params.id);
@@ -207,10 +274,10 @@ router.delete('/:id', authAdmin, async (req, res) => {
         
         const siteName = site.siteName;
 
-        // 1. Unassign ALL labors
+        // 1. Unassign ALL labors (Workers and Managers) from the deleted site
         await Labor.updateMany(
-            { site: siteName }, 
-            { $set: { site: null } }
+            { sites: siteName }, // Find any labor whose 'sites' array contains the siteName
+            { $pull: { sites: siteName } } // Pull/Remove that siteName from the array
         );
         
         // 2. Delete the file from the server disk
@@ -224,7 +291,7 @@ router.delete('/:id', authAdmin, async (req, res) => {
         // 3. Delete the site document
         await Site.findByIdAndDelete(req.params.id);
 
-        res.json({ message: "Site deleted successfully, and workers unassigned." });
+        res.json({ message: "Site deleted successfully, and all users unassigned." });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

@@ -5,7 +5,7 @@ const laborSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ["Manager", "Worker"], required: true },
+    role: { type: String, enum: ["Manager", "Worker", "admin"], required: true },
     category: {
         type: String,
         enum: [
@@ -16,11 +16,9 @@ const laborSchema = new mongoose.Schema({
     },
     contact: { type: String, required: true },
     
-    // Enforces one user per site, but allows multiple unassigned users
-    site: { 
-        type: String,
-        unique: true, 
-        sparse: true  
+    sites: { 
+        type: [String], 
+        default: [], 
     }, 
     
     createdAt: { type: Date, default: Date.now },
