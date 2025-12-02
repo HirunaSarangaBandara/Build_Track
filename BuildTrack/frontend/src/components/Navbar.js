@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom"; // NavLink is now correctly used
+import { NavLink, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
-import { logout, getRole, getUserName, isAuthenticated } from "../services/auth"; 
+import { logout, getRole, getUserName, isAuthenticated } from "../services/auth";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,6 +17,7 @@ function Navbar() {
 
   // Re-read data periodically to catch asynchronous login/logout events
   useEffect(() => {
+    // Initial sync check
     const storedRole = getRole();
     const storedName = getUserName();
     
@@ -28,14 +29,16 @@ function Navbar() {
     // Set up an interval to regularly check auth status (resolves race condition)
     const intervalId = setInterval(() => {
         const newRole = getRole();
-        if (newRole !== userRole) {
+        const newName = getUserName();
+        
+        if (newRole !== userRole || newName !== currentUserName) {
             setUserRole(newRole);
-            setCurrentUserName(getUserName());
+            setCurrentUserName(newName);
         }
     }, 1000); 
 
     return () => clearInterval(intervalId); // Cleanup interval on unmount
-  }, [userRole, currentUserName]); 
+  }, [userRole, currentUserName]);
   
   // Logic to determine the display name
   const greetingName = (role) => {
@@ -52,12 +55,14 @@ function Navbar() {
   };
   
   const getRoleAbbreviation = (role) => {
-    return role ? role[0].toUpperCase() : 'U';
+    // If role is undefined/null, return '?'
+    return role ? role[0].toUpperCase() : '?'; 
   };
 
   const handleLogout = () => {
     logout();
     navigate("/");
+    setMenuOpen(false); // Close menu on logout
   };
 
   return (
@@ -68,17 +73,17 @@ function Navbar() {
         </h2>
       </div>
 
-      {/* Hamburger for mobile - setMenuOpen is now USED */}
+      {/* Hamburger for mobile */}
       <div
         className={`hamburger ${menuOpen ? "open" : ""}`}
-        onClick={() => setMenuOpen(!menuOpen)} // setMenuOpen is used here
+        onClick={() => setMenuOpen(!menuOpen)}
       >
         <span></span>
         <span></span>
         <span></span>
       </div>
 
-      {/* Navigation Links - NavLink is used correctly */}
+      {/* Navigation Links */}
       <nav className={`navbar-links ${menuOpen ? "show" : ""}`}>
         <NavLink to="/dashboard" className="nav-item" onClick={() => setMenuOpen(false)}>
           Dashboard
@@ -98,6 +103,17 @@ function Navbar() {
         <NavLink to="/reports" className="nav-item" onClick={() => setMenuOpen(false)}>
           Reports
         </NavLink>
+
+        {/* Mobile Logout Button (Visible only in collapsed menu on mobile) */}
+        {isAuthenticated() && (
+            <button 
+                className="logout-btn mobile-only" 
+                onClick={handleLogout}
+            >
+                Logout ({greetingName(role)})
+            </button>
+        )}
+        
       </nav>
 
       <div className="navbar-right">
@@ -114,7 +130,8 @@ function Navbar() {
             </div>
         </div>
         
-        <button className="logout-btn" onClick={handleLogout}>
+        {/* Desktop Logout Button */}
+        <button className="logout-btn desktop-only" onClick={handleLogout}>
           Logout 
         </button>
       </div>

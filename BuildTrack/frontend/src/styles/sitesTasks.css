@@ -1,4 +1,4 @@
-/* General Page Layout (No change) */
+/* General Page Layout */
 .sites-page {
     background-color: #f4f7fb;
     min-height: 100vh;
@@ -17,7 +17,38 @@
     font-weight: 600;
 }
 
-/* --- Add/Toggle Button (No change) --- */
+.site-list h2 {
+    color: #333;
+    font-size: 22px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* --- Status Message Box --- */
+.status-box {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 0 auto 20px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+}
+
+.status-box-success {
+    background-color: #e6ffee;
+    color: #009688;
+    border: 1px solid #009688;
+}
+
+.status-box-error {
+    background-color: #ffe6e6;
+    color: #c00;
+    border: 1px solid #c00;
+}
+
+/* --- Add/Toggle Button --- */
 .btn-toggle-form {
     background: #009688;
     color: #fff;
@@ -38,7 +69,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Form Styles & Permission Message (No change) --- */
+/* --- Form Styles & Permission Message --- */
 .site-add-form {
     display: flex;
     flex-wrap: wrap;
@@ -85,7 +116,7 @@
     resize: vertical;
 }
 
-.site-add-form button {
+.site-add-form button[type="submit"] {
     background: linear-gradient(90deg, #004aad, #0077cc);
     color: #fff;
     padding: 12px 22px;
@@ -93,8 +124,12 @@
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; 
     flex: 1 1 100%;
+}
+.site-add-form button[type="submit"]:hover {
+    background: linear-gradient(90deg, #002b5b, #004aad);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* --- Site Cards List --- */
@@ -110,7 +145,7 @@
     border-radius: 14px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s, box-shadow 0.3s;
-    border-left: 6px solid #004aad;
+    border-left: 6px solid #004aad; 
     overflow: hidden;
 }
 
@@ -118,6 +153,13 @@
     transform: translateY(-5px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
+
+/* Status-based card highlights */
+.site-card.status-active { border-left-color: #009688; }
+.site-card.status-completed { border-left-color: #004aad; }
+.site-card.status-onhold { border-left-color: #ff9800; }
+.site-card.status-planned { border-left-color: #555; }
+
 
 .site-image {
     width: 100%;
@@ -147,11 +189,15 @@
     margin-left: 5px;
 }
 
-/* --- Team List Display Styles --- */
+/* --- Team List Display Styles (Enhanced) --- */
 .team-list {
     margin-top: 15px;
     padding-top: 10px;
     border-top: 1px dashed #eee;
+}
+
+.team-header {
+    margin-bottom: 5px !important;
 }
 
 .team-list ul {
@@ -171,6 +217,10 @@
     font-size: 12px;
     font-weight: 500;
 }
+/* Optional: Differentiate team member roles if needed */
+.team-list li.team-role-manager { background-color: #e8f0ff; color: #004aad; }
+.team-list li.team-role-worker { background-color: #e6ffee; color: #009688; }
+
 
 .unassigned-message {
     color: #888;
@@ -184,6 +234,7 @@
     font-size: 12px;
     font-weight: 600;
     margin-left: 8px;
+    vertical-align: middle;
 }
 
 .status-active { background-color: #e6ffee; color: #009688; }
@@ -192,7 +243,7 @@
 .status-planned { background-color: #f0f0f0; color: #555; }
 
 
-/* Latest Update Comment (No change) */
+/* Latest Update Comment */
 .latest-update {
     background-color: #f9f9f9;
     border-left: 3px solid #ccc;
@@ -201,6 +252,12 @@
     font-size: 13px;
     line-height: 1.4;
     color: #444;
+}
+
+.latest-update strong {
+    color: #004aad;
+    margin-right: 5px;
+    font-weight: 600;
 }
 
 .latest-update small {
@@ -228,9 +285,19 @@
     transition: background 0.3s ease;
 }
 
+.btn-assign-worker { 
+    background: #ffa726; 
+    color: white;
+    flex: 1.5; 
+}
+.btn-assign-worker:hover {
+    background: #fb8c00;
+}
+
 .btn-update-progress {
     background: #009688;
     color: white;
+    flex: 1;
 }
 
 .btn-update-progress:hover {
@@ -246,7 +313,6 @@
     background: #ffd2d2;
 }
 
-/* FIX: Ensure View Only Tag styles correctly */
 .view-only-tag {
     background: #f0f0f0;
     color: #777;
@@ -259,9 +325,10 @@
     width: 100%;
     box-sizing: border-box;
     align-self: center;
+    flex: 1 1 100%; 
 }
 
-/* --- MODAL STYLING (Functional Fix) --- */
+/* --- MODAL STYLING (General) --- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -272,27 +339,52 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
-    /* FIX: Ensure this is visually on top */
+    z-index: 500; 
 }
 
-.site-update-modal {
+.site-update-modal, .worker-assignment-modal, .confirmation-modal {
     background: #ffffff;
     padding: 30px;
     border-radius: 12px;
-    max-width: 500px;
     width: 90%;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    /* FIX: Set display to block to ensure content renders */
     display: block;
 }
+.site-update-modal { max-width: 500px; }
+.worker-assignment-modal { max-width: 450px; }
+.confirmation-modal { max-width: 400px; text-align: center; } 
 
-.site-update-modal h3, .site-update-modal h4 {
+
+/* --- Raise Z-index for confirmation overlay --- */
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; 
+}
+
+
+.site-update-modal h3, .site-update-modal h4, 
+.worker-assignment-modal h3, .worker-assignment-modal h4,
+.confirmation-modal h3 {
     color: #004aad;
     margin-top: 0;
     margin-bottom: 15px;
     border-bottom: 1px solid #eee;
     padding-bottom: 5px;
+}
+
+.confirmation-modal h3 {
+    border-bottom: none;
+    color: #c00;
+    font-size: 24px;
+    font-weight: 600;
 }
 
 .site-update-modal textarea {
@@ -323,12 +415,14 @@
     align-items: center;
     font-size: 15px;
     color: #333;
+    cursor: pointer; 
 }
 
 .task-item input[type="checkbox"] {
     margin-right: 10px;
     width: 18px;
     height: 18px;
+    cursor: pointer;
 }
 
 .task-item.completed label {
@@ -340,6 +434,7 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    padding-top: 15px; 
 }
 
 .modal-actions button {
@@ -350,30 +445,178 @@
     font-size: 15px;
 }
 
-.modal-actions button[type="submit"] {
+.modal-actions button[type="submit"],
+.modal-actions .btn-action { 
     background: #004aad;
     color: white;
 }
+.modal-actions .btn-action:hover,
+.modal-actions button[type="submit"]:hover {
+    background: #002b5b;
+}
 
-.modal-actions button[type="button"] {
+/* Confirmation Modal button overrides */
+.modal-actions .btn-delete {
+    background: #ff4d4d; 
+    color: white;
+}
+.modal-actions .btn-delete:hover {
+    background: #cc0000;
+}
+
+.modal-actions .btn-cancel,
+.modal-actions .btn-release-manager { 
     background: #f0f0f0;
     color: #555;
 }
+.modal-actions .btn-cancel:hover,
+.modal-actions .btn-release-manager:hover {
+    background: #e0e0e0;
+}
+
+
+/* --- Worker Assignment Modal STYLING (NEW/Refined) --- */
+.worker-assignment-modal .select-category {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+.team-management-list, .available-worker-list {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #e0e0e0; 
+    border-radius: 6px;
+    background-color: #f8f8f8;
+}
+
+.team-member-item, .available-worker-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed #ccc;
+    font-size: 14px;
+}
+
+.team-member-item:last-child, .available-worker-item:last-child {
+    border-bottom: none;
+}
+
+.no-workers-msg {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.btn-assign {
+    background: #009688;
+    color: white;
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 6px; 
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.btn-assign:hover {
+    background: #00796b;
+}
+
+.btn-release { 
+    background: #ff7043; 
+    color: white;
+    padding: 6px 10px;
+    font-size: 13px;
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    transition: background 0.3s ease;
+}
+.btn-release:hover {
+    background: #e64a19;
+}
+
+/* NEW: Admin Controls in Update Modal */
+.admin-controls-group {
+    background-color: #f8f8ff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0f0;
+    margin-bottom: 20px;
+}
+
+.admin-controls-group h4 {
+    color: #004aad;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #d0d0f0;
+    padding-bottom: 5px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.control-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.control-item label {
+    font-weight: 500;
+    color: #333;
+    flex-shrink: 0;
+    margin-right: 15px;
+}
+
+.control-item select {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+.control-item select:disabled {
+    background-color: #eee;
+    color: #888;
+}
+
+.admin-controls-group hr {
+    border: 0;
+    border-top: 1px dashed #e0e0f0;
+    margin: 15px 0;
+}
+
 
 /* --- Media Queries --- */
 @media (max-width: 768px) {
-  .sites-page {
-    padding: 90px 20px;
-  }
-  
-  .site-add-form {
-    flex-direction: column;
-    max-width: 100%;
-  }
+    .sites-page {
+        padding: 90px 20px;
+    }
+    
+    .site-add-form {
+        flex-direction: column;
+        max-width: 100%;
+    }
 
-  .site-add-form input,
-  .site-add-form select,
-  .site-add-form textarea {
-    flex: 1 1 100%;
-  }
+    .site-add-form input,
+    .site-add-form select,
+    .site-add-form textarea {
+        flex: 1 1 100%;
+    }
+
+    .site-actions {
+        flex-direction: column;
+    }
+
+    .site-actions button, .view-only-tag {
+        flex: 1 1 100%;
+    }
 }

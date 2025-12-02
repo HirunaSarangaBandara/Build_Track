@@ -17,6 +17,28 @@
   font-weight: 600;
 }
 
+/* --- Status Message Box --- */
+.status-box {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.status-box-success {
+    background-color: #e6ffee;
+    color: #009688;
+    border: 1px solid #009688;
+}
+
+.status-box-error {
+    background-color: #ffe6e6;
+    color: #c00;
+    border: 1px solid #c00;
+}
+
 /* --- Toggle Button --- */
 .btn-toggle-form {
     background: #009688;
@@ -105,21 +127,38 @@
   transition: all 0.3s ease;
 }
 
-.inventory-update-form button.cancel-btn {
+.inventory-update-form button.cancel-btn,
+.confirmation-modal .cancel-btn {
     background: #ccc;
     color: #333;
 }
-.inventory-update-form button.cancel-btn:hover {
+.inventory-update-form button.cancel-btn:hover,
+.confirmation-modal .cancel-btn:hover {
     background: #aaa;
 }
 
 
 /* --- Inventory Grid --- */
+.inventory-list h2 {
+    color: #002b5b;
+    font-size: 22px;
+    font-weight: 500;
+    margin-top: 20px;
+}
+
 .inventory-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   margin-top: 15px;
+}
+
+.no-items-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    font-style: italic;
 }
 
 .inventory-card {
@@ -170,7 +209,9 @@
 
 /* --- Action Buttons Container --- */
 .inventory-actions {
-    margin-top: 15px; /* Spacing above actions/view tag */
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
 }
 
 /* Style for Admin Buttons */
@@ -184,11 +225,6 @@
     transition: background 0.2s ease;
 }
 
-.btn-update-qty,
-.btn-delete {
-    flex: 1;
-}
-
 .btn-update-qty {
     background: #004aad;
     color: #fff;
@@ -198,17 +234,16 @@
 }
 
 .btn-delete {
-    background: #ffe6e6;
-    color: #c00;
+    background: #ff4d4d; /* More aggressive red for delete */
+    color: #fff;
 }
 
 .btn-delete:hover {
-    background: #ffd2d2;
+    background: #cc0000;
 }
 
 /* --- VIEW ONLY TAG (For non-admins) --- */
 .view-only-tag {
-    /* Styles for the tag that REPLACES the buttons */
     background: #f0f0f0;
     color: #777;
     font-weight: 600;
@@ -219,6 +254,56 @@
     display: block;
     width: 100%;
     box-sizing: border-box;
+}
+
+/* --- Confirmation Modal Styling --- */
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.confirmation-modal {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+.confirmation-modal h3 {
+    color: #c00;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.confirmation-modal p {
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.confirmation-modal .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.confirmation-modal .modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
 }
 
 /* --- Media Queries --- */

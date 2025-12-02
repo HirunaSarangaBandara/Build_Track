@@ -1,14 +1,32 @@
+/* Background container */
 .login-page {
-  background: url("../assets/login-bg.jpg") no-repeat center center/cover;
-  font-family: "Segoe UI", sans-serif;
+  position: fixed;        
+  top: 0;
+  left: 0;
   height: 100vh;
   width: 100%;
-  margin: 0;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: "Segoe UI", sans-serif;
+  background: transparent !important; 
 }
 
+/* 🔹 Lottie Background */
+.login-lottie {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;       
+  opacity: 0.9;            
+  z-index: -10;            
+  pointer-events: none;
+}
+
+/* Glass login card */
 .login-container {
   background: rgba(255, 255, 255, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -16,10 +34,12 @@
   padding: 40px;
   width: 380px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px); 
+  -webkit-backdrop-filter: blur(14px);
   color: #1a1a1a;
   transition: all 0.3s ease-in-out;
+  position: relative;
+  z-index: 10;    
 }
 
 .login-container:hover {
@@ -47,6 +67,7 @@
   margin-bottom: 15px;
 }
 
+/* Inputs */
 .login-form input {
   padding: 12px;
   border: none;
@@ -58,15 +79,12 @@
   transition: 0.3s;
 }
 
-.login-form input::placeholder {
-  color: #555;
-}
-
 .login-form input:focus {
   background: #ffffff;
   box-shadow: 0 0 8px rgba(0, 92, 151, 0.6);
 }
 
+/* Password field */
 .password-field {
   position: relative;
   display: flex;
@@ -92,6 +110,7 @@
   color: #002f5e;
 }
 
+/* Button */
 .login-form button {
   padding: 12px;
   background: linear-gradient(to right, #005c97, #363795);
@@ -123,9 +142,15 @@
   border-radius: 5px;
 }
 
+/* 📱 Mobile Responsive */
 @media (max-width: 480px) {
   .login-container {
-    width: 90%;
+    width: 92%;
     padding: 30px;
+  }
+
+  .login-lottie {
+    opacity: 1; 
+    object-fit: cover;
   }
 }
