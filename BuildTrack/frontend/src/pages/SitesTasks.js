@@ -129,7 +129,11 @@ function SitesTasks() {
         }
         
         try {
-            await API.post('/sites', data);
+            await API.post('/sites', data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+        });
             showStatusMessage('success', '✅ Site added successfully!');
             setFormData({ siteName: '', managerId: '', managerName: '', siteImage: null, otherDetails: '' });
             setShowAddForm(false);
