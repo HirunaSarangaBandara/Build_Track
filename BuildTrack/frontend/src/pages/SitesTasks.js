@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import API from '../services/api';
 import { getRole, getUserId, getUserName } from '../services/auth';
 import '../styles/sitesTasks.css'; 
+import { useLanguage } from "../contexts/LanguageContext";
 
 // Define the base URL for fetching static assets (images)
 const BACKEND_HOST = "http://localhost:5000"; 
@@ -9,6 +10,7 @@ const BACKEND_HOST = "http://localhost:5000";
 const DEFAULT_IMAGE_URL = `${BACKEND_HOST}/uploads/default-site.jpg`; 
 
 function SitesTasks() {
+    const { t } = useLanguage();
     const [sites, setSites] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [managers, setManagers] = useState([]); 
@@ -632,7 +634,7 @@ function SitesTasks() {
 
     return (
         <div className="sites-page">
-            <h1>Site & Task Management</h1>
+            <h1>{t('sitesTitle')}</h1>
 
             {/* --- 0. Status Message --- */}
             {message.text && (
@@ -648,7 +650,7 @@ function SitesTasks() {
             {currentUserRole === 'admin' ? (
                 <>
                     <button className="btn-toggle-form" onClick={() => setShowAddForm(!showAddForm)}>
-                        {showAddForm ? 'Hide Add Site Form' : '➕ Add New Site'}
+                        {showAddForm ? 'Hide Add Site Form' : `➕ ${t('addSite')}`}
                     </button>
                     
                     {showAddForm && (

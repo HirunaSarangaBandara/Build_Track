@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import "../styles/communication.css";
+import { useLanguage } from "../contexts/LanguageContext";
 
 function Communication() {
+  const { t } = useLanguage();
   const [messages, setMessages] = useState([
     { id: 1, sender: "Manager", text: "Meeting at 10 AM tomorrow." },
     { id: 2, sender: "Worker", text: "Noted, thank you!" },
@@ -24,8 +26,8 @@ function Communication() {
 
   return (
     <div className="communication-container">
-      <h1>Communication</h1>
-      <p>Send messages and stay connected with your site team.</p>
+      <h1>{t("communicationTitle")}</h1>
+      <p>{t("communicationHint")}</p>
 
       <div className="chat-box">
         <div className="chat-messages">
@@ -44,12 +46,12 @@ function Communication() {
         <div className="chat-input">
           <input
             type="text"
-            placeholder="Type your message..."
+            placeholder={t("messagePlaceholder")}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
-          <button onClick={handleSend}>Send</button>
+          <button onClick={handleSend}>{t("send")}</button>
         </div>
       </div>
     </div>

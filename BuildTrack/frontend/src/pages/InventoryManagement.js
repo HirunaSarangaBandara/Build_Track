@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import API from "../services/api";
 import "../styles/inventoryManagement.css";
 import { getRole } from "../services/auth"; 
+import { useLanguage } from "../contexts/LanguageContext";
 
 function InventoryManagement() {
+  const { t } = useLanguage();
   const [inventory, setInventory] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newItem, setNewItem] = useState({
@@ -146,7 +148,7 @@ function InventoryManagement() {
 
   return (
     <div className="inventory-page">
-      <h1>Construction Inventory Management</h1>
+      <h1>{t("inventoryTitle")}</h1>
 
       {/* Status Message Display */}
       {message.text && (
@@ -172,7 +174,7 @@ function InventoryManagement() {
       {currentUserRole === 'admin' ? (
         <>
           <button className="btn-toggle-form" onClick={handleToggleAddForm}>
-            {showAddForm ? "Hide Add Item Form" : "➕ Add New Inventory Item"}
+            {showAddForm ? "Hide Add Item Form" : `➕ ${t("addNewInventoryItem")}`}
           </button>
           
           {showAddForm && (
