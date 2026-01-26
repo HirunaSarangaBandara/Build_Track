@@ -3,10 +3,14 @@ import API from "../services/api";
 import { getRole } from "../services/auth";
 import { io } from "socket.io-client";
 import "../styles/communication.css";
+import { useLanguage } from "../contexts/LanguageContext";
 
+// Socket connection
 const socket = io("http://localhost:5000");
 
 const Communication = () => {
+  const { t } = useLanguage();
+
   const [recipients, setRecipients] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -17,12 +21,14 @@ const Communication = () => {
   const selectedUserRef = useRef(null);
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
+
   const myRole = getRole();
 
   useEffect(() => {
     selectedUserRef.current = selectedUser;
   }, [selectedUser]);
 
+  // Fetch contacts
   const fetchContacts = useCallback(async () => {
     try {
       const { data } = await API.get("/messages/recipients");
@@ -32,8 +38,10 @@ const Communication = () => {
     }
   }, []);
 
+  // Socket + initial load
   useEffect(() => {
     fetchContacts();
+
     const user = JSON.parse(localStorage.getItem("user"));
     if (user?.id) socket.emit("join", user.id);
 
@@ -55,16 +63,20 @@ const Communication = () => {
     return () => socket.off("new_message");
   }, [fetchContacts]);
 
+  // Auto scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Select user
   const handleSelect = async (user) => {
     setSelectedUser(user);
-    setIsMobileChatOpen(true); // open chat on mobile
+    setIsMobileChatOpen(true);
+
     try {
       const { data } = await API.get(`/messages/chat/${user._id}`);
       setMessages(data);
+
       if (user.unreadCount > 0) {
         await API.put(`/messages/read/${user._id}`);
         setRecipients((prev) =>
@@ -78,6 +90,7 @@ const Communication = () => {
     }
   };
 
+  // Send message
   const handleSend = async (e) => {
     e.preventDefault();
     if (!text.trim() && !file) return;
@@ -91,19 +104,18 @@ const Communication = () => {
       const { data } = await API.post("/messages", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setMessages([...messages, data]);
+
+      setMessages((prev) => [...prev, data]);
       setText("");
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to send");
+      alert(err.response?.data?.message || "Failed to send message");
     }
   };
 
   const handleBack = () => {
     setIsMobileChatOpen(false);
-    // optional: if you want to fully close chat and show empty state on desktop too:
-    // setSelectedUser(null);
   };
 
   return (
@@ -113,12 +125,13 @@ const Communication = () => {
           isMobileChatOpen ? "mobile-chat-active" : ""
         }`}
       >
-        {/* --- Sidebar: Contact List --- */}
+        {/* Sidebar */}
         <aside className="comm-sidebar">
           <div className="sidebar-top">
             <h2>BuildTrack</h2>
             <span className="my-role-badge">{myRole}</span>
           </div>
+
           <div className="contact-list-container">
             {recipients.map((u) => (
               <div
@@ -133,8 +146,9 @@ const Communication = () => {
                     u.role === "admin" ? "admin-box" : ""
                   }`}
                 >
-                  {u.role === "admin" ? "🛡️" : u.name[0]}
+                  {u.role === "admin" ? "🛡️" : u.name?.[0]}
                 </div>
+
                 <div className="contact-meta">
                   <div className="contact-name-line">
                     <strong>{u.name}</strong>
@@ -142,12 +156,13 @@ const Communication = () => {
                       <span className="unread-badge">{u.unreadCount}</span>
                     )}
                   </div>
+
                   <div className="contact-sub-line">
                     <span className="role-label">{u.role}</span>
-                    {u.sites && u.sites.length > 0 && (
+                    {u.sites?.length > 0 && (
                       <div className="site-tag-container">
-                        {u.sites.map((site, index) => (
-                          <span key={index} className="site-pill">
+                        {u.sites.map((site, i) => (
+                          <span key={i} className="site-pill">
                             {site}
                           </span>
                         ))}
@@ -160,7 +175,7 @@ const Communication = () => {
           </div>
         </aside>
 
-        {/* --- Main: Chat Interface --- */}
+        {/* Chat Area */}
         <main className="chat-interface">
           {selectedUser ? (
             <>
@@ -170,14 +185,7 @@ const Communication = () => {
                 </button>
                 <div className="header-info">
                   <h3>{selectedUser.name}</h3>
-                  <div className="header-sub-info">
-                    <span className="header-status">{selectedUser.role}</span>
-                    {selectedUser.sites?.map((s, i) => (
-                      <span key={i} className="header-site-pill">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
+                  <span className="header-status">{selectedUser.role}</span>
                 </div>
               </header>
 
@@ -190,29 +198,16 @@ const Communication = () => {
                     }`}
                   >
                     {m.fileUrl && (
-                      <div className="attachment-content">
-                        {m.fileType === "image" ? (
-                          <img
-                            src={`http://localhost:5000${m.fileUrl}`}
-                            alt="Attachment"
-                            className="comm-img-preview"
-                            onClick={() =>
-                              window.open(`http://localhost:5000${m.fileUrl}`)
-                            }
-                          />
-                        ) : (
-                          <a
-                            href={`http://localhost:5000${m.fileUrl}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="comm-file-link"
-                          >
-                            📄 {m.fileName || "View Document"}
-                          </a>
-                        )}
-                      </div>
+                      <a
+                        href={`http://localhost:5000${m.fileUrl}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="comm-file-link"
+                      >
+                        📎 {m.fileName || "Attachment"}
+                      </a>
                     )}
-                    {m.content && <p className="m-0">{m.content}</p>}
+                    {m.content && <p>{m.content}</p>}
                     <span className="comm-timestamp">
                       {new Date(m.createdAt).toLocaleTimeString([], {
                         hour: "2-digit",
@@ -227,22 +222,13 @@ const Communication = () => {
               {file && (
                 <div className="file-selection-preview">
                   <span>📎 {file.name}</span>
-                  <button
-                    className="remove-file-btn"
-                    onClick={() => {
-                      setFile(null);
-                      if (fileInputRef.current) fileInputRef.current.value = "";
-                    }}
-                  >
-                    ✕
-                  </button>
+                  <button onClick={() => setFile(null)}>✕</button>
                 </div>
               )}
 
               <form className="comm-input-bar" onSubmit={handleSend}>
                 <button
                   type="button"
-                  className="comm-attach-btn"
                   onClick={() => fileInputRef.current.click()}
                 >
                   📎
@@ -252,23 +238,20 @@ const Communication = () => {
                   ref={fileInputRef}
                   hidden
                   onChange={(e) => setFile(e.target.files[0])}
-                  accept="image/*,.pdf"
                 />
                 <input
                   type="text"
+                  placeholder={t("messagePlaceholder") || "Type a message..."}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Type a message..."
                 />
-                <button type="submit" disabled={!text.trim() && !file}>
-                  ➤
-                </button>
+                <button type="submit">➤</button>
               </form>
             </>
           ) : (
             <div className="comm-empty-state">
               <div className="empty-visual">💬</div>
-              <p>Select a colleague to start chatting</p>
+              <p>{t("communicationHint") || "Select a user to start chatting"}</p>
             </div>
           )}
         </main>

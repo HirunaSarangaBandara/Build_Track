@@ -1,4 +1,7 @@
 import React from "react";
+import { useLanguage } from "../contexts/LanguageContext";
+
 export default function Reports() {
-  return <h2>📊 Reports</h2>;
+  const { t } = useLanguage();
+  return <h2>📊 {t("reportsTitle")}</h2>;
 }
