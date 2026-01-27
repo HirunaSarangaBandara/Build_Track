@@ -2,11 +2,9 @@ import React, { useState, useEffect, useCallback, memo } from "react";
 import API from "../services/api";
 import "../styles/laborManagement.css";
 import { getRole } from "../services/auth";
-import { useLanguage } from "../contexts/LanguageContext";
 
 // Use memo for performance optimization
 const LaborManagement = memo(() => {
-  const { t } = useLanguage();
   const [labors, setLabors] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -186,7 +184,7 @@ const LaborManagement = memo(() => {
 
   return (
     <div className="labor-page">
-      <h1>{t("laborTitle")}</h1>
+      <h1>Labor & Manager Management</h1>
 
       {/* Render the confirmation/view modal */}
       {renderModal()} 
