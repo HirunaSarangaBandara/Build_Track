@@ -63,7 +63,7 @@
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .user-profile {
@@ -120,6 +120,12 @@
     cursor: pointer;
     font-weight: 500;
     transition: 0.3s;
+    margin-bottom: 35px;
+}
+
+.logout-btn.desktop-only {
+    margin-left: 8px;
+    z-index: 1101;
 }
 
 .logout-btn:hover {
@@ -220,3 +226,19 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Language selector in navbar (scoped to navbar to avoid global overrides) */
+.navbar .language-select {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    color: white;
+    font-weight: 600;
+    margin-right: 12px;
+    flex-shrink: 0;
+    min-width: 56px;
+    margin-top: 40px;
+}
+
+.navbar .language-select option { color: #002b5b; }

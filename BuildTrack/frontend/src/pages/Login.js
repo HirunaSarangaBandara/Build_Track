@@ -4,6 +4,7 @@ import API from "../services/api";
 import Lottie from "react-lottie-player";
 import animationData from "../assets/City Building.json";
 import "../styles/login.css";
+import { useLanguage } from "../contexts/LanguageContext";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -12,6 +13,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const TOKEN_KEY = "authToken";
   const ROLE_KEY = "userRole";
@@ -23,7 +25,7 @@ function Login() {
     setError("");
 
     if (!username.trim() || !password.trim()) {
-      setError("Please fill in both fields.");
+      setError(t("fillFields"));
       return;
     }
 
@@ -40,8 +42,7 @@ function Login() {
       navigate("/dashboard");
     } catch (err) {
       const msg =
-        err.response?.data?.message ||
-        "Invalid credentials. Please try again.";
+        err.response?.data?.message || t("invalidCredentials");
       setError(msg);
     } finally {
       setLoading(false);
@@ -61,12 +62,13 @@ function Login() {
 
       <div className="login-container">
         <form className="login-form" onSubmit={handleSubmit}>
-          <h1>Welcome to BuildTrack!</h1>
-          <h2>Login</h2>
+          <LanguageSelector />
+          <h1>{t("welcome")}</h1>
+          <h2>{t("loginTitle")}</h2>
 
           <input
             type="text"
-            placeholder="Enter Email or Username"
+            placeholder={t("placeholderUsername")}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -75,7 +77,7 @@ function Login() {
           <div className="password-field">
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Enter Password"
+              placeholder={t("placeholderPassword")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -91,7 +93,7 @@ function Login() {
           {error && <p className="error">{error}</p>}
 
           <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? t("loggingIn") : t("loginButton")}
           </button>
         </form>
       </div>
@@ -100,3 +102,22 @@ function Login() {
 }
 
 export default Login;
+
+function LanguageSelector() {
+  const { lang, setLang, t } = useLanguage();
+
+  return (
+    <div style={{ width: "100%" }}>
+      <select
+        className="language-select"
+        value={lang}
+        onChange={(e) => setLang(e.target.value)}
+        aria-label={t("loginTitle") + " language selector"}
+      >
+        <option value="en">English</option>
+        <option value="ta">தமிழ்</option>
+        <option value="si">සිංහල</option>
+      </select>
+    </div>
+  );
+}

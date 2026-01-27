@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { authorizeRoles } = require('../middleware/authMiddleware'); 
 
-// --- Helper Functions (unchanged) ---
+// --- Helper Functions ---
 function generatePassword() {
     try {
         const plainPassword = crypto.randomBytes(5).toString("hex"); 
@@ -27,7 +27,7 @@ function generateUsername(name) {
     );
 }
 
-// Setup email transporter (unchanged)
+// Setup email transporter
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -56,9 +56,13 @@ router.post("/", authorizeRoles('admin'), async (req, res) => {
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
         const newLabor = new Labor({
-            name, email, username,
+            name,
+            email,
+            username,
             password: hashedPassword,
-            role, category, contact, 
+            role,
+            category,
+            contact,
             sites: [], // Initialized as an empty array
         });
         await newLabor.save();
@@ -89,43 +93,82 @@ router.post("/", authorizeRoles('admin'), async (req, res) => {
     }
 });
 
-// --- PATCH labor by ID (for **WORKER** site assignment/release) ---
-// Accepts 'site' (string or null) for backwards compatibility with the frontend worker assignment logic.
-router.patch("/:id", authorizeRoles('admin', 'Manager'), async (req, res) => {
-    const { site } = req.body; 
-    const laborId = req.params.id;
+/* ============================================================
+   WORKER SITE ASSIGN / RELEASE (used from SitesTasks.js)
+   ============================================================ */
 
-    if (site === undefined) {
-        return res.status(400).json({ message: "Only the 'site' field can be patched here." });
+// ASSIGN worker to a site
+router.patch(
+  "/assign-site/:id",
+  authorizeRoles('admin', 'Manager'),
+  async (req, res) => {
+    const laborId = req.params.id;
+    const { siteName } = req.body;
+
+    if (!siteName) {
+      return res.status(400).json({ message: "siteName is required." });
     }
 
     try {
-        const laborToUpdate = await Labor.findById(laborId);
-        if (!laborToUpdate) {
-            return res.status(404).json({ message: "Cannot find user." });
-        }
-        
-        // Ensure this route is only used for Worker roles
-        if (laborToUpdate.role !== 'Worker') {
-            return res.status(403).json({ message: "Forbidden: This endpoint is for managing Worker site assignment only." });
-        }
-        
-        // Managers can only assign/release their Workers
-        if (req.user.role === 'Manager' && laborToUpdate.role !== 'Worker') {
-            return res.status(403).json({ message: "Forbidden: Managers can only modify Worker roles." });
-        }
-        
-        // Perform the update on the 'sites' array for a Worker (max 1 site)
-        laborToUpdate.sites = site ? [site] : []; 
-        await laborToUpdate.save();
+      const labor = await Labor.findById(laborId);
+      if (!labor) {
+        return res.status(404).json({ message: "Cannot find user." });
+      }
 
-        res.json({ message: "Worker site updated successfully.", labor: laborToUpdate });
+      if (labor.role !== 'Worker') {
+        return res
+          .status(403)
+          .json({ message: "Only Worker roles can be assigned to sites." });
+      }
+
+      // single-site assignment model
+      labor.sites = [siteName];
+      await labor.save();
+
+      res.json({ message: `Worker assigned to site ${siteName}.`, labor });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
-});
+  }
+);
 
-// --- NEW: PATCH route for Manager Site Assignment/Deassignment (ADMIN ONLY) ---
+// RELEASE worker from a site
+router.patch(
+  "/release-site/:id",
+  authorizeRoles('admin', 'Manager'),
+  async (req, res) => {
+    const laborId = req.params.id;
+    const { siteName } = req.body;
+
+    if (!siteName) {
+      return res.status(400).json({ message: "siteName is required." });
+    }
+
+    try {
+      const labor = await Labor.findById(laborId);
+      if (!labor) {
+        return res.status(404).json({ message: "Cannot find user." });
+      }
+
+      if (labor.role !== 'Worker') {
+        return res
+          .status(403)
+          .json({ message: "Only Worker roles can be released from sites." });
+      }
+
+      labor.sites = [];
+      await labor.save();
+
+      res.json({ message: `Worker released from site ${siteName}.`, labor });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
+
+/* ============================================================
+   MANAGER SITE ASSIGN / DEASSIGN (used from SitesTasks.js)
+   ============================================================ */
 router.patch("/manager-site/:id", authorizeRoles('admin'), async (req, res) => {
     const laborId = req.params.id;
     const { siteName, action } = req.body; // action: 'assign' or 'deassign'
@@ -142,7 +185,6 @@ router.patch("/manager-site/:id", authorizeRoles('admin'), async (req, res) => {
 
         if (action === 'assign') {
             if (!laborToUpdate.sites.includes(siteName)) {
-                // Assign site using MongoDB $push operator
                 await Labor.findByIdAndUpdate(laborId, { $push: { sites: siteName } });
                 return res.json({ message: `Manager assigned to site ${siteName}.` });
             }
@@ -150,13 +192,11 @@ router.patch("/manager-site/:id", authorizeRoles('admin'), async (req, res) => {
         
         if (action === 'deassign') {
             if (laborToUpdate.sites.includes(siteName)) {
-                // Deassign site using MongoDB $pull operator
                 await Labor.findByIdAndUpdate(laborId, { $pull: { sites: siteName } });
                 return res.json({ message: `Manager deassigned from site ${siteName}.` });
             }
         }
         
-        // Fetch and return the updated labor document (optional, but good practice)
         const updatedLabor = await Labor.findById(laborId);
         res.status(200).json({ message: `Manager's site list is already in the requested state.`, labor: updatedLabor });
 
@@ -165,13 +205,43 @@ router.patch("/manager-site/:id", authorizeRoles('admin'), async (req, res) => {
     }
 });
 
+/* ============================================================
+   (OPTIONAL) generic PATCH by id – keep only if you still need it
+   ============================================================ */
+// If you still want a generic patch for worker site via 'site' field
+router.patch("/:id", authorizeRoles('admin', 'Manager'), async (req, res) => {
+    const { site } = req.body; 
+    const laborId = req.params.id;
+
+    if (site === undefined) {
+        return res.status(400).json({ message: "Only the 'site' field can be patched here." });
+    }
+
+    try {
+        const laborToUpdate = await Labor.findById(laborId);
+        if (!laborToUpdate) {
+            return res.status(404).json({ message: "Cannot find user." });
+        }
+        
+        if (laborToUpdate.role !== 'Worker') {
+            return res.status(403).json({ message: "Forbidden: This endpoint is for managing Worker site assignment only." });
+        }
+        
+        laborToUpdate.sites = site ? [site] : []; 
+        await laborToUpdate.save();
+
+        res.json({ message: "Worker site updated successfully.", labor: laborToUpdate });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 // --- DELETE labor by ID (ADMIN ONLY) ---
 router.delete("/:id", authorizeRoles('admin'), async (req, res) => {
     try {
         const labor = await Labor.findByIdAndDelete(req.params.id);
 
-        if (labor == null) {
+        if (!labor) {
             return res.status(404).json({ message: "Cannot find labor" });
         }
 
@@ -180,6 +250,5 @@ router.delete("/:id", authorizeRoles('admin'), async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-
 
 module.exports = router;
