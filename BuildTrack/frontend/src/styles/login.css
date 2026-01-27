@@ -42,18 +42,6 @@
   z-index: 10;    
 }
 
-/* Language selector (top-right of the card) */
-.language-select {
-  position: absolute;
-  top: 12px;
-  right: 14px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.08);
-  background: rgba(255,255,255,0.9);
-  font-size: 13px;
-}
-
 .login-container:hover {
   transform: scale(1.02);
 }

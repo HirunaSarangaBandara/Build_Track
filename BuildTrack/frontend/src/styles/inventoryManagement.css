@@ -4,7 +4,7 @@
   min-height: 100vh;
   width: 100%;
   margin: 0;
-  padding: 100px 40px 40px;
+  padding: 100px 40px 40px; 
   box-sizing: border-box;
   font-family: "Segoe UI", sans-serif;
 }
@@ -19,46 +19,46 @@
 
 /* --- Status Message Box --- */
 .status-box {
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-weight: 600;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .status-box-success {
-  background-color: #e6ffee;
-  color: #009688;
-  border: 1px solid #009688;
+    background-color: #e6ffee;
+    color: #009688;
+    border: 1px solid #009688;
 }
 
 .status-box-error {
-  background-color: #ffe6e6;
-  color: #c00;
-  border: 1px solid #c00;
+    background-color: #ffe6e6;
+    color: #c00;
+    border: 1px solid #c00;
 }
 
 /* --- Toggle Button --- */
 .btn-toggle-form {
-  background: #009688;
-  color: #fff;
-  padding: 12px 22px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.3s ease;
-  display: block;
-  width: 100%;
-  max-width: 350px;
-  margin: 0 auto 30px;
+    background: #009688;
+    color: #fff;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto 30px;
 }
 
 .btn-toggle-form:hover {
-  background: #00796b;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: #00796b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* --- Add/Update Forms Styling --- */
@@ -75,7 +75,7 @@
   justify-content: space-between;
 }
 
-/* --- ADMIN PERMISSION MESSAGE STYLES --- */
+/* --- ADMIN PERMISSION MESSAGE STYLES (Used when non-admin loads the page) --- */
 .inventory-add-form.permission-message {
   display: flex;
   justify-content: center;
@@ -91,35 +91,27 @@
   font-weight: 500;
   text-align: center;
 }
-
 /* --- END PERMISSION MESSAGE STYLES --- */
 
 .inventory-add-form h2,
 .inventory-update-form h2 {
-  color: #004aad;
-  width: 100%;
-  margin-bottom: 10px;
-  font-size: 20px;
-  font-weight: 500;
+    color: #004aad;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 500;
 }
 
 .inventory-add-form input,
 .inventory-add-form select,
 .inventory-update-form input {
-  flex: 1 1 200px;
+  flex: 1 1 200px; 
   padding: 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 15px;
   outline: none;
   transition: all 0.2s ease-in-out;
-}
-
-.inventory-add-form input:focus,
-.inventory-add-form select:focus,
-.inventory-update-form input:focus {
-  border-color: #004aad;
-  box-shadow: 0 0 0 1px rgba(0, 74, 173, 0.1);
 }
 
 .inventory-add-form button,
@@ -135,29 +127,23 @@
   transition: all 0.3s ease;
 }
 
-.inventory-add-form button:hover,
-.inventory-update-form button:hover {
-  background: #003a8b;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
 .inventory-update-form button.cancel-btn,
 .confirmation-modal .cancel-btn {
-  background: #ccc;
-  color: #333;
+    background: #ccc;
+    color: #333;
 }
-
 .inventory-update-form button.cancel-btn:hover,
 .confirmation-modal .cancel-btn:hover {
-  background: #aaa;
+    background: #aaa;
 }
+
 
 /* --- Inventory Grid --- */
 .inventory-list h2 {
-  color: #002b5b;
-  font-size: 22px;
-  font-weight: 500;
-  margin-top: 20px;
+    color: #002b5b;
+    font-size: 22px;
+    font-weight: 500;
+    margin-top: 20px;
 }
 
 .inventory-grid {
@@ -168,11 +154,11 @@
 }
 
 .no-items-message {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 30px;
-  color: #666;
-  font-style: italic;
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    font-style: italic;
 }
 
 .inventory-card {
@@ -205,214 +191,119 @@
 }
 
 .inventory-card strong {
-  color: #333;
+    color: #333;
 }
 
 /* --- Availability Status Tags --- */
 .inventory-status {
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 14px;
-  text-align: center;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
 }
 
-.status-in {
-  background-color: #e6ffee;
-  color: #009688;
-}
-.status-low {
-  background-color: #fffbe6;
-  color: #ff9800;
-}
-.status-out {
-  background-color: #ffe6e6;
-  color: #c00;
-}
-
-/* --- Chips for Available / Allocated / Used --- */
-.inventory-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 6px 0 4px;
-}
-
-.chip {
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-  border: 1px solid transparent;
-}
-
-.chip-available {
-  background: #e6ffee;
-  color: #00695c;
-  border-color: #b2dfdb;
-}
-
-.chip-allocated {
-  background: #e3f2fd;
-  color: #1565c0;
-  border-color: #bbdefb;
-}
-
-.chip-used {
-  background: #fff3e0;
-  color: #ef6c00;
-  border-color: #ffe0b2;
-}
-
-.chip-remaining {
-  background: #f3e5f5;
-  color: #6a1b9a;
-  border-color: #e1bee7;
-}
-
-/* --- Allocation section in card --- */
-.inventory-allocation-section {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px dashed #e0e0e0;
-  font-size: 14px;
-}
-
-.inventory-allocation-section h4 {
-  margin-bottom: 8px;
-  color: #004aad;
-  font-size: 14px;
-}
-
-.inventory-allocation-section select,
-.inventory-allocation-section input {
-  width: 100%;
-  margin-bottom: 6px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 13px;
-  box-sizing: border-box;
-}
-
-.inventory-allocation-section select:focus,
-.inventory-allocation-section input:focus {
-  border-color: #009688;
-  box-shadow: 0 0 0 1px rgba(0, 150, 136, 0.18);
-}
-
-.inventory-allocation-section .btn-allocate {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: none;
-  background: #009688;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.inventory-allocation-section .btn-allocate:hover {
-  background: #00796b;
-}
+.status-in { background-color: #e6ffee; color: #009688; }
+.status-low { background-color: #fffbe6; color: #ff9800; }
+.status-out { background-color: #ffe6e6; color: #c00; }
 
 /* --- Action Buttons Container --- */
 .inventory-actions {
-  margin-top: 15px;
-  display: flex;
-  gap: 10px;
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
 }
 
 /* Style for Admin Buttons */
 .inventory-actions > button {
-  flex: 1;
-  padding: 10px 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: none;
-  transition: background 0.2s ease;
+    flex: 1;
+    padding: 10px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease;
 }
 
 .btn-update-qty {
-  background: #004aad;
-  color: #fff;
+    background: #004aad;
+    color: #fff;
 }
 .btn-update-qty:hover {
-  background: #003a8b;
+    background: #003a8b;
 }
 
 .btn-delete {
-  background: #ff4d4d;
-  color: #fff;
+    background: #ff4d4d; /* More aggressive red for delete */
+    color: #fff;
 }
+
 .btn-delete:hover {
-  background: #cc0000;
+    background: #cc0000;
 }
 
 /* --- VIEW ONLY TAG (For non-admins) --- */
 .view-only-tag {
-  background: #f0f0f0;
-  color: #777;
-  font-weight: 600;
-  padding: 10px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  text-align: center;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
+    background: #f0f0f0;
+    color: #777;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* --- Confirmation Modal Styling --- */
 .confirmation-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .confirmation-modal {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
 }
 
 .confirmation-modal h3 {
-  color: #c00;
-  margin-bottom: 15px;
-  font-size: 24px;
+    color: #c00;
+    margin-bottom: 15px;
+    font-size: 24px;
 }
 
 .confirmation-modal p {
-  margin-bottom: 25px;
-  color: #333;
+    margin-bottom: 25px;
+    color: #333;
 }
 
 .confirmation-modal .modal-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
 }
 
 .confirmation-modal .modal-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
 }
 
 /* --- Media Queries --- */
@@ -420,7 +311,7 @@
   .inventory-page {
     padding: 90px 20px;
   }
-
+  
   .inventory-add-form,
   .inventory-update-form {
     flex-direction: column;

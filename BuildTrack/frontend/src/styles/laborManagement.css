@@ -53,7 +53,7 @@
     display: block;
     width: 100%;
     max-width: 350px;
-    margin: 0 auto 30px;
+    margin: 0 auto 30px; 
 }
 
 .btn-toggle-form:hover {
@@ -71,15 +71,15 @@
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    margin: 0 auto 35px;
+    margin: 0 auto 35px; 
     max-width: 800px;
     justify-content: center;
 }
 
-/* --- Ensure H2 spans full width --- */
+/* --- IMPROVEMENT: Ensure H2 spans full width in the flex container --- */
 .labor-form h2 {
     color: #004aad;
-    width: 100%;
+    width: 100%; 
     text-align: center;
     margin-bottom: 15px;
     font-size: 22px;
@@ -120,8 +120,7 @@
     box-shadow: 0 0 6px rgba(0, 74, 173, 0.3);
 }
 
-/* Submit button */
-.labor-form button[type="submit"] {
+.labor-form button[type="submit"] { /* Explicitly target submit button */
     background: linear-gradient(90deg, #004aad, #0077cc);
     color: #fff;
     padding: 12px 22px;
@@ -130,7 +129,7 @@
     cursor: pointer;
     font-size: 16px;
     transition: all 0.3s ease;
-    flex: 1 1 250px;
+    flex: 1 1 250px; 
 }
 
 .labor-form button[type="submit"]:hover {
@@ -257,14 +256,14 @@
 }
 
 .confirmation-modal h3 {
-    color: #c00;
+    color: #c00; 
     margin-bottom: 15px;
     font-size: 24px;
     font-weight: 600;
 }
 
 .confirmation-modal.view-modal h3 {
-    color: #009688;
+    color: #009688; 
 }
 
 .confirmation-modal p {
@@ -303,7 +302,7 @@
 
 /* Override labor card button styles for modal buttons */
 .modal-actions .delete-btn {
-    background: #ff4d4d;
+    background: #ff4d4d; 
     color: #fff;
 }
 .modal-actions .delete-btn:hover {
@@ -317,12 +316,14 @@
     background: #aaa;
 }
 .modal-actions .view-btn {
+    /* Used for 'Close' button in view modal */
     background: #004aad;
     color: #fff;
 }
 .modal-actions .view-btn:hover {
     background: #003a8b;
 }
+
 
 /* --- Media Queries --- */
 @media (max-width: 768px) {
@@ -335,22 +336,9 @@
     }
 
     .labor-form input,
-    .labor-form select {
+    .labor-form select,
+    .labor-form button {
         flex: 1 1 100%;
-    }
-
-    /* Full-width, larger buttons on mobile */
-    .labor-form button[type="submit"] {
-        flex: 1 1 100%;
-        width: 100%;
-        font-size: 16px;
-        padding: 14px 18px;
-    }
-
-    .btn-toggle-form {
-        max-width: 100%;
-        font-size: 16px;
-        padding: 14px 18px;
     }
 
     .labor-card {
@@ -359,16 +347,5 @@
 
     .labor-card h3 {
         font-size: 18px;
-    }
-
-    /* Larger modal buttons, stacked vertically */
-    .modal-actions {
-        flex-direction: column;
-    }
-
-    .modal-actions button {
-        width: 100%;
-        font-size: 15px;
-        padding: 12px 18px;
     }
 }

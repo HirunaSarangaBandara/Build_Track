@@ -1,463 +1,76 @@
-/* --- Root Variables for Branding --- */
-:root {
-  --primary-blue: #004aad;
-  --accent-teal: #009688;
-  --error-red: #ff4d4f;
-  --glass-bg: rgba(255, 255, 255, 0.9);
-  --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.1);
-  --border-light: 1px solid rgba(0, 0, 0, 0.08);
-  --bg-light: #f4f7fb;
-  --sent-bubble: #004aad;
-  --received-bubble: #ffffff;
-
-  /* Height of your fixed top navbar (adjust as needed) */
-  --nav-height: 60px;
+.communication-container {
+  padding: 30px;
+  background-color: #f2f6fa;
+  min-height: calc(100vh - 60px);
+  font-family: "Segoe UI", sans-serif;
 }
 
-/* --- Main Page Wrapper --- */
-.comm-page {
-  padding: 80px 20px 20px;
-  background: linear-gradient(135deg, #f4f7fb 0%, #e0eafc 100%);
-  height: 100vh;
-  width: 100%;
-  margin: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
+.communication-container h1 {
+  color: #003366;
+  margin-bottom: 5px;
 }
 
-/* --- Glassmorphism Container --- */
-.comm-glass-container {
-  display: flex;
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  height: 100%;
-  width: 100%;
-  max-width: 1200px;
-  border-radius: 16px;
-  box-shadow: var(--shadow-soft);
-  border: var(--border-light);
-  overflow: hidden;
-  position: relative;
+.communication-container p {
+  color: #555;
+  margin-bottom: 25px;
 }
 
-/* --- Sidebar Styling --- */
-.comm-sidebar {
-  width: 320px;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.5);
-  flex-shrink: 0;
-}
-
-.sidebar-top {
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.sidebar-top h2 {
-  color: var(--primary-blue);
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-.my-role-badge {
-  background: var(--primary-blue);
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-/* --- Contact List --- */
-.contact-list-container {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.contact-row-item {
-  display: flex;
-  padding: 15px 20px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
-  align-items: center;
-}
-
-.contact-row-item:hover {
-  background: rgba(0, 74, 173, 0.04);
-}
-
-.contact-row-item.selected {
-  background: rgba(0, 74, 173, 0.08);
-  border-left: 4px solid var(--primary-blue);
-}
-
-.avatar-box {
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(135deg, var(--primary-blue), #00c6ff);
-  color: #fff;
+.chat-box {
+  background: #fff;
   border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin-right: 12px;
-  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  max-width: 700px;
 }
 
-.admin-box {
-  background: linear-gradient(135deg, #ff416c, #ff4b2b);
-}
-
-.contact-meta {
-  flex: 1;
-  min-width: 0;
-}
-
-.contact-name-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.contact-name-line strong {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
-}
-
-/* --- Sidebar Sub-line for Role & Sites --- */
-.contact-sub-line {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-  overflow: hidden;
-}
-
-.role-label {
-  font-size: 10px;
-  color: #666;
-  background: rgba(0, 0, 0, 0.05);
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.site-tag-container {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.site-tag-container::-webkit-scrollbar {
-  display: none;
-}
-
-.site-pill {
-  font-size: 10px;
-  color: var(--primary-blue);
-  background: #eef2ff;
-  padding: 1px 6px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 74, 173, 0.1);
-  white-space: nowrap;
-}
-
-/* --- Unread Badge --- */
-.unread-badge {
-  background: var(--error-red);
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 5px;
-}
-
-/* --- Chat Interface Area --- */
-.chat-interface {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
-  position: relative;
-  min-width: 0;
-}
-
-.chat-header-bar {
-  padding: 15px 20px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  align-items: center;
-  background: #fff;
-  z-index: 2;
-}
-
-.header-info h3 {
-  margin: 0;
-  font-size: 16px;
-  color: #333;
-}
-
-/* --- Header Sub-info for Roles & Sites --- */
-.header-sub-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 2px;
-}
-
-.header-status {
-  font-size: 12px;
-  color: #888;
-}
-
-.header-site-pill {
-  font-size: 11px;
-  background: #333;
-  color: #fff;
-  padding: 1px 8px;
-  border-radius: 4px;
-  font-weight: 500;
-}
-
-/* --- Messages Area --- */
-.chat-messages-area {
-  flex: 1;
-  padding: 20px;
+.chat-messages {
+  max-height: 350px;
   overflow-y: auto;
-  background: #fdfdfe;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  margin-bottom: 20px;
+  padding-right: 8px;
 }
 
-.comm-bubble {
-  max-width: 70%;
+.chat-message {
   padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 14px;
-  line-height: 1.5;
-  position: relative;
-  word-wrap: break-word;
+  border-radius: 10px;
+  margin: 8px 0;
+  display: inline-block;
 }
 
-.comm-bubble.sent {
-  align-self: flex-end;
-  background: var(--sent-bubble);
-  color: #fff;
-  border-bottom-right-radius: 2px;
-}
-
-.comm-bubble.received {
+.chat-message.received {
+  background: #e0ecff;
   align-self: flex-start;
-  background: var(--received-bubble);
-  color: #333;
-  border: 1px solid #eaeaea;
-  border-bottom-left-radius: 2px;
 }
 
-/* --- Attachments --- */
-.attachment-content {
-  margin-bottom: 8px;
+.chat-message.sent {
+  background: #cce5ff;
+  align-self: flex-end;
 }
 
-.comm-img-preview {
-  max-width: 100%;
-  max-height: 300px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: block;
-  transition: opacity 0.2s;
-}
-
-.comm-img-preview:hover {
-  opacity: 0.9;
-}
-
-.comm-file-link {
+.chat-input {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.chat-input input {
+  flex: 1;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
   border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-  font-size: 13px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid #ccc;
+  font-size: 15px;
 }
 
-.sent .comm-file-link {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.comm-timestamp {
-  font-size: 10px;
-  opacity: 0.7;
-  display: block;
-  margin-top: 4px;
-  text-align: right;
-}
-
-/* --- Input Bar --- */
-.comm-input-bar {
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #fff;
-  border-top: 1px solid #eee;
-}
-
-.comm-attach-btn {
-  background: none;
+.chat-input button {
+  background-color: #0055aa;
   border: none;
-  font-size: 20px;
-  color: #666;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
   cursor: pointer;
-  padding: 5px;
+  transition: 0.3s;
 }
 
-.comm-input-bar input[type="text"] {
-  flex: 1;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 24px;
-  outline: none;
-  font-size: 14px;
-}
-
-.comm-input-bar button[type="submit"] {
-  background: var(--primary-blue);
-  color: #fff;
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s;
-}
-
-.comm-input-bar button[type="submit"]:disabled {
-  background: #ccc;
-}
-
-/* --- Previews --- */
-.file-selection-preview {
-  padding: 10px 20px;
-  background: #f0f7ff;
-  border-top: 1px solid #d0e4ff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  color: var(--primary-blue);
-}
-
-.remove-file-btn {
-  background: none;
-  border: none;
-  color: var(--error-red);
-  cursor: pointer;
-  font-weight: bold;
-}
-
-/* --- Empty State --- */
-.comm-empty-state {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #999;
-}
-
-.empty-visual {
-  font-size: 60px;
-  margin-bottom: 10px;
-  opacity: 0.2;
-}
-
-/* --- Mobile Responsiveness --- */
-.comm-back-btn {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 20px;
-  margin-right: 10px;
-  cursor: pointer;
-}
-
-@media (max-width: 768px) {
-  .comm-page {
-    padding: 0;
-    /* push content below fixed navbar */
-    padding-top: var(--nav-height);
-  }
-
-  .comm-glass-container {
-    border-radius: 0;
-    /* keep container inside viewport under navbar */
-    height: calc(100vh - var(--nav-height));
-  }
-
-  /* Sidebar covers full screen on mobile and can slide out */
-  .comm-sidebar {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    transition: transform 0.3s ease;
-    z-index: 50;
-  }
-
-  .mobile-chat-active .comm-sidebar {
-    transform: translateX(-100%);
-  }
-
-  .chat-interface {
-    position: absolute;
-    top: 0;
-    left: 100%;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.3s ease;
-    z-index: 100;
-  }
-
-  .mobile-chat-active .chat-interface {
-    transform: translateX(-100%);
-  }
-
-  .comm-back-btn {
-    display: block;
-  }
+.chat-input button:hover {
+  background-color: #003366;
 }
