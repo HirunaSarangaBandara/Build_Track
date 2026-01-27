@@ -339,6 +339,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow-y: auto; /* allow viewport scrolling when modal is taller than screen */
+    padding: 20px 10px; /* ensure some spacing on small screens */
     z-index: 500; 
 }
 
@@ -349,6 +351,8 @@
     width: 90%;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     display: block;
+    max-height: calc(100vh - 80px); /* leave space for top/bottom */
+    overflow-y: auto; /* enable internal scrolling */
 }
 .site-update-modal { max-width: 500px; }
 .worker-assignment-modal { max-width: 450px; }

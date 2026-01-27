@@ -130,12 +130,21 @@ router.post('/', upload.single('siteImage'), authAdmin, async (req, res) => {
     
     const { siteName, managerId, managerName, otherDetails } = req.body;
     
+    // Basic validation: siteName is required
+    if (!siteName || !siteName.toString().trim()) {
+        // Delete uploaded file if present
+        if (req.file) { try { fs.unlinkSync(req.file.path); } catch {} }
+        return res.status(400).json({ message: "Missing required field: siteName" });
+    }
     try {
         const imagePath = req.file ? `/uploads/site_images/${req.file.filename}` : null; 
         
+        const sanitizedKey = siteName.toString().trim().toLowerCase().replace(/\s+/g, '-');
+
         const newSite = new Site({ 
             siteName, 
-            siteNameKey: siteName, 
+            // store a normalized key to avoid accidental uniqueness collisions
+            siteNameKey: sanitizedKey, 
             managerId, 
             managerName, 
             otherDetails,
