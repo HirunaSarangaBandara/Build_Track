@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
 import { logout, getRole, getUserName, isAuthenticated } from "../services/auth";
-import { useLanguage } from "../contexts/LanguageContext";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,7 +11,6 @@ function Navbar() {
   const [currentUserName, setCurrentUserName] = useState(getUserName());
   
   const navigate = useNavigate();
-  const { lang, setLang, t } = useLanguage();
 
   // Use the state variables for rendering
   const role = userRole; 
@@ -88,22 +86,22 @@ function Navbar() {
       {/* Navigation Links */}
       <nav className={`navbar-links ${menuOpen ? "show" : ""}`}>
         <NavLink to="/dashboard" className="nav-item" onClick={() => setMenuOpen(false)}>
-          {t("navDashboard")}
+          Dashboard
         </NavLink>
         <NavLink to="/sites-tasks" className="nav-item" onClick={() => setMenuOpen(false)}>
-          {t("navSitesTasks")}
+          Sites & Tasks
         </NavLink>
         <NavLink to="/labor-management" className="nav-item" onClick={() => setMenuOpen(false)}>
-          {t("navLabor")}
+          Labor
         </NavLink>
         <NavLink to="/inventory" className="nav-item" onClick={() => setMenuOpen(false)}>
-          {t("navInventory")}
+          Inventory
         </NavLink>
         <NavLink to="/communication" className="nav-item" onClick={() => setMenuOpen(false)}>
-          {t("navCommunication")}
+          Communication
         </NavLink>
         <NavLink to="/reports" className="nav-item" onClick={() => setMenuOpen(false)}>
-          {t("navReports")}
+          Reports
         </NavLink>
 
         {/* Mobile Logout Button (Visible only in collapsed menu on mobile) */}
@@ -119,18 +117,6 @@ function Navbar() {
       </nav>
 
       <div className="navbar-right">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <select
-            className="language-select"
-            value={lang}
-            onChange={(e) => setLang(e.target.value)}
-            aria-label="Language selector"
-          >
-            <option value="en">EN</option>
-            <option value="ta">TA</option>
-            <option value="si">SI</option>
-          </select>
-        </div>
         
         {/* User Profile and Greeting Container */}
         <div className="user-profile">
@@ -139,14 +125,14 @@ function Navbar() {
             </div>
             
             <div className="profile-text">
-              <span className="user-greeting">{t('hello')}, {greetingName(role)}!</span>
-              <span className="role-text">{role?.toUpperCase() || t('guest').toUpperCase()}</span>
+                <span className="user-greeting">Hello, {greetingName(role)}!</span>
+                <span className="role-text">{role?.toUpperCase() || 'GUEST'}</span>
             </div>
         </div>
         
         {/* Desktop Logout Button */}
         <button className="logout-btn desktop-only" onClick={handleLogout}>
-          {t('logout')}
+          Logout 
         </button>
       </div>
     </header>

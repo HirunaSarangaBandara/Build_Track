@@ -4,7 +4,6 @@ import API from "../services/api";
 import Lottie from "react-lottie-player";
 import animationData from "../assets/City Building.json";
 import "../styles/login.css";
-import { useLanguage } from "../contexts/LanguageContext";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -13,7 +12,6 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { t } = useLanguage();
 
   const TOKEN_KEY = "authToken";
   const ROLE_KEY = "userRole";
@@ -25,7 +23,7 @@ function Login() {
     setError("");
 
     if (!username.trim() || !password.trim()) {
-      setError(t("fillFields"));
+      setError("Please fill in both fields.");
       return;
     }
 
@@ -42,7 +40,7 @@ function Login() {
       navigate("/dashboard");
     } catch (err) {
       const msg =
-        err.response?.data?.message || t("invalidCredentials");
+        err.response?.data?.message || "Invalid credentials. Please try again.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -51,8 +49,7 @@ function Login() {
 
   return (
     <div className="login-page">
-
-      {/* 🔹 Lottie Animated Background */}
+      {/* Lottie Animated Background */}
       <Lottie
         loop
         play
@@ -62,13 +59,12 @@ function Login() {
 
       <div className="login-container">
         <form className="login-form" onSubmit={handleSubmit}>
-          <LanguageSelector />
-          <h1>{t("welcome")}</h1>
-          <h2>{t("loginTitle")}</h2>
+          <h1>Welcome to BuildTrack!</h1>
+          <h2>Login</h2>
 
           <input
             type="text"
-            placeholder={t("placeholderUsername")}
+            placeholder="Enter Email or Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -77,7 +73,7 @@ function Login() {
           <div className="password-field">
             <input
               type={showPassword ? "text" : "password"}
-              placeholder={t("placeholderPassword")}
+              placeholder="Enter Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -93,7 +89,7 @@ function Login() {
           {error && <p className="error">{error}</p>}
 
           <button type="submit" disabled={loading}>
-            {loading ? t("loggingIn") : t("loginButton")}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
@@ -102,22 +98,3 @@ function Login() {
 }
 
 export default Login;
-
-function LanguageSelector() {
-  const { lang, setLang, t } = useLanguage();
-
-  return (
-    <div style={{ width: "100%" }}>
-      <select
-        className="language-select"
-        value={lang}
-        onChange={(e) => setLang(e.target.value)}
-        aria-label={t("loginTitle") + " language selector"}
-      >
-        <option value="en">English</option>
-        <option value="ta">தமிழ்</option>
-        <option value="si">සිංහල</option>
-      </select>
-    </div>
-  );
-}
