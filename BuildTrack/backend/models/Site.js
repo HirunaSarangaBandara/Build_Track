@@ -15,6 +15,20 @@ const updateCommentSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
 });
 
+// --- NEW: Allocated Inventory Schema ---
+// This handles the tracking of materials assigned to this specific site
+const allocatedInventorySchema = new mongoose.Schema({
+    inventoryItem: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Inventory",
+        required: true,
+    },
+    itemName: { type: String, required: true },
+    unit: { type: String, required: true },
+    allocatedQuantity: { type: Number, required: true, min: 0 },
+    usedQuantity: { type: Number, required: true, min: 0, default: 0 },
+});
+
 const siteSchema = new mongoose.Schema({
     siteName: {
         type: String,
@@ -40,6 +54,12 @@ const siteSchema = new mongoose.Schema({
     siteImage: {
         type: String, // Path saved by Multer
         default: null,
+        // (Optional) improved path handling from your first file
+        set: function (v) {
+            if (!v) return null;
+            let normalized = v.replace(/\\/g, "/");
+            return normalized.startsWith("/") ? normalized : "/" + normalized;
+        },
     },
     startDate: {
         type: Date,
@@ -47,10 +67,12 @@ const siteSchema = new mongoose.Schema({
     },
 
     tasks: [taskSchema],
+    
     currentStatus: {
         type: String,
         default: "Site Created",
     },
+    
     updates: [updateCommentSchema],
 
     status: {
@@ -58,13 +80,18 @@ const siteSchema = new mongoose.Schema({
         enum: ['Planned', 'Active', 'On Hold', 'Completed'],
         default: 'Active',
     },
+    
     otherDetails: {
         type: String,
     },
+    
     createdAt: {
         type: Date,
         default: Date.now,
     },
+
+    // --- NEW: Link the inventory schema here ---
+    allocatedInventory: [allocatedInventorySchema],
 });
 
 module.exports = mongoose.model('Site', siteSchema);

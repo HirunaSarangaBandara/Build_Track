@@ -1,43 +1,69 @@
 import React, { useState, useEffect } from "react";
 import API from "../services/api";
 import "../styles/inventoryManagement.css";
-import { getRole } from "../services/auth"; 
+import { getRole } from "../services/auth";
 import { useLanguage } from "../contexts/LanguageContext";
 
 function InventoryManagement() {
   const { t } = useLanguage();
+  
+  // --- State ---
   const [inventory, setInventory] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newItem, setNewItem] = useState({
     name: "", category: "", quantity: 0, unit: "",
   });
   const [updateData, setUpdateData] = useState({ id: null, quantity: 0 });
-  const [message, setMessage] = useState({ type: '', text: '' }); // For status messages
-  const [itemToDelete, setItemToDelete] = useState(null); // For custom deletion confirmation
+  const [message, setMessage] = useState({ type: '', text: '' });
+  const [itemToDelete, setItemToDelete] = useState(null);
 
-  const currentUserRole = getRole(); 
+  // --- New Allocation State ---
+  const [sites, setSites] = useState([]);
+  const [allocationData, setAllocationData] = useState({});
+
+  const currentUserRole = getRole();
 
   const itemCategories = [
-    "Cement & Aggregates", "Steel & Metal", "Wood & Timber", "Plumbing", "Electrical", 
+    "Cement & Aggregates", "Steel & Metal", "Wood & Timber", "Plumbing", "Electrical",
     "Tools & Equipment", "Safety Gear", "Finishing Materials", "Other",
   ];
 
-  useEffect(() => { fetchInventory(); }, []);
+  useEffect(() => {
+    fetchInventory();
+    if (currentUserRole === "admin") {
+      fetchSitesForAllocation();
+    }
+  }, [currentUserRole]);
 
   const showStatusMessage = (type, text) => {
     setMessage({ type, text });
     setTimeout(() => setMessage({ type: '', text: '' }), 5000);
   };
 
+  // --- API Calls ---
+
   const fetchInventory = async () => {
     try {
-      const { data } = await API.get("/inventory");
+      // Calls the new endpoint that returns allocated/used counts
+      const { data } = await API.get("/inventory/with-allocation");
       setInventory(data);
     } catch (error) {
       console.error("Error fetching inventory:", error);
       showStatusMessage('error', 'Failed to fetch inventory data.');
     }
   };
+
+  const fetchSitesForAllocation = async () => {
+    try {
+      const { data } = await API.get("/sites");
+      setSites(data);
+    } catch (error) {
+      console.error("Error fetching sites for allocation:", error);
+      showStatusMessage("error", "Failed to fetch sites for allocation.");
+    }
+  };
+
+  // --- Form Handlers ---
 
   const handleNewItemChange = (e) => {
     const { name, value } = e.target;
@@ -58,13 +84,13 @@ function InventoryManagement() {
       return;
     }
     setShowAddForm(!showAddForm);
-    setNewItem({ name: "", category: "", quantity: 0, unit: "" }); // Reset form on toggle
+    setNewItem({ name: "", category: "", quantity: 0, unit: "" });
   };
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     if (currentUserRole !== 'admin') return;
-    
+
     try {
       await API.post("/inventory", newItem);
       showStatusMessage('success', "✅ Item added successfully!");
@@ -73,7 +99,6 @@ function InventoryManagement() {
       fetchInventory();
     } catch (error) {
       const msg = error.response?.data?.message || error.message;
-      console.error("Error adding item:", msg);
       if (error.response?.status === 403) {
         showStatusMessage('error', "❌ Permission Denied: Only administrators can add new inventory items.");
       } else {
@@ -87,28 +112,26 @@ function InventoryManagement() {
       showStatusMessage('error', "❌ Access Denied: Only administrators can delete inventory items.");
       return;
     }
-    // Show custom confirmation UI (handled via state)
     setItemToDelete({ id, name });
   };
 
   const confirmDeleteItem = async () => {
     if (!itemToDelete) return;
     const { id, name } = itemToDelete;
-    
+
     try {
       await API.delete(`/inventory/${id}`);
       showStatusMessage('success', `🗑️ ${name} deleted successfully!`);
       fetchInventory();
     } catch (error) {
       const msg = error.response?.data?.message || error.message;
-      console.error("Error deleting item:", msg);
       if (error.response?.status === 403) {
         showStatusMessage('error', "❌ Permission Denied: Only administrators can delete inventory items.");
       } else {
         showStatusMessage('error', `❌ Failed to delete item: ${msg}`);
       }
     } finally {
-      setItemToDelete(null); // Close confirmation
+      setItemToDelete(null);
     }
   };
 
@@ -116,24 +139,71 @@ function InventoryManagement() {
     e.preventDefault();
     if (currentUserRole !== 'admin') {
       showStatusMessage('error', "❌ Permission Denied: Only administrators can update inventory items.");
-      setUpdateData({ id: null, quantity: 0 }); 
+      setUpdateData({ id: null, quantity: 0 });
       return;
     }
     if (!updateData.id) return;
 
     try {
-      await API.patch(`/inventory/${updateData.id}`, { quantity: updateData.quantity }); 
+      await API.patch(`/inventory/${updateData.id}`, { quantity: updateData.quantity });
       showStatusMessage('success', "✅ Quantity updated successfully!");
-      setUpdateData({ id: null, quantity: 0 }); 
-      fetchInventory(); 
+      setUpdateData({ id: null, quantity: 0 });
+      fetchInventory();
     } catch (error) {
       const msg = error.response?.data?.message || error.message;
-      console.error("Error updating item:", msg);
       if (error.response?.status === 403) {
         showStatusMessage('error', "❌ Permission Denied: You do not have permission to update items.");
       } else {
         showStatusMessage('error', `❌ Failed to update item: ${msg}`);
       }
+    }
+  };
+
+  // --- Allocation Handlers ---
+
+  const handleAllocationChange = (e, itemId) => {
+    const { name, value } = e.target;
+    setAllocationData((prev) => ({
+      ...prev,
+      [itemId]: {
+        ...(prev[itemId] || { siteId: "", quantity: 0 }),
+        [name]: name === "quantity" ? Number(value) : value,
+      },
+    }));
+  };
+
+  const handleAllocateToSite = async (item) => {
+    if (currentUserRole !== "admin") {
+      showStatusMessage("error", "❌ Permission Denied: Only administrators can allocate inventory.");
+      return;
+    }
+
+    const dataForItem = allocationData[item._id] || { siteId: "", quantity: 0 };
+    const { siteId, quantity } = dataForItem;
+
+    if (!siteId || !quantity || quantity <= 0) {
+      showStatusMessage("error", "Please select a site and enter a positive quantity.");
+      return;
+    }
+
+    try {
+      await API.post("/inventory/allocate", {
+        siteId,
+        inventoryId: item._id,
+        quantity,
+      });
+      showStatusMessage("success", `✅ Allocated ${quantity} ${item.unit} of ${item.name} to site.`);
+      
+      // Reset allocation form for this item
+      setAllocationData((prev) => ({
+        ...prev,
+        [item._id]: { siteId: "", quantity: 0 },
+      }));
+      
+      fetchInventory(); // Refresh data
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message;
+      showStatusMessage("error", `❌ Failed to allocate: ${msg}`);
     }
   };
 
@@ -150,19 +220,18 @@ function InventoryManagement() {
     <div className="inventory-page">
       <h1>{t("inventoryTitle")}</h1>
 
-      {/* Status Message Display */}
       {message.text && (
         <div className={`status-box status-box-${message.type}`}>
           {message.text}
         </div>
       )}
 
-      {/* Delete Confirmation Modal/Overlay (Simple) */}
+      {/* Delete Confirmation Modal */}
       {itemToDelete && (
         <div className="confirmation-overlay">
           <div className="confirmation-modal">
             <h3>⚠️ Confirm Deletion</h3>
-            <p>Are you sure you want to permanently delete **{itemToDelete.name}**?</p>
+            <p>Are you sure you want to permanently delete <strong>{itemToDelete.name}</strong>?</p>
             <div className="modal-actions">
               <button className="btn-delete" onClick={confirmDeleteItem}>Yes, Delete</button>
               <button className="cancel-btn" onClick={() => setItemToDelete(null)}>Cancel</button>
@@ -171,12 +240,13 @@ function InventoryManagement() {
         </div>
       )}
 
+      {/* Add Item Form */}
       {currentUserRole === 'admin' ? (
         <>
           <button className="btn-toggle-form" onClick={handleToggleAddForm}>
             {showAddForm ? "Hide Add Item Form" : `➕ ${t("addNewInventoryItem")}`}
           </button>
-          
+
           {showAddForm && (
             <form className="inventory-add-form" onSubmit={handleAddSubmit}>
               <h2>Add New Item</h2>
@@ -186,17 +256,18 @@ function InventoryManagement() {
                 {itemCategories.map((cat) => (<option key={cat} value={cat}>{cat}</option>))}
               </select>
               <input type="number" name="quantity" placeholder="Initial Quantity" value={newItem.quantity} onChange={handleNewItemChange} min="0" required />
-              <input type="text" name="unit" placeholder="Unit (e.g., bags, kg, pieces)" value={newItem.unit} onChange={handleNewItemChange} required />
+              <input type="text" name="unit" placeholder="Unit (e.g., bags, kg)" value={newItem.unit} onChange={handleNewItemChange} required />
               <button type="submit">Submit New Item</button>
             </form>
           )}
         </>
       ) : (
         <div className="inventory-add-form permission-message">
-          <p>🔒 **View Only Mode** You do not have permission to modify inventory.</p>
+          <p>🔒 <strong>View Only Mode</strong> You do not have permission to modify inventory.</p>
         </div>
       )}
 
+      {/* Update Quantity Form */}
       {updateData.id && (
         <form className="inventory-update-form" onSubmit={handleUpdateSubmit}>
           <h2>Update Quantity</h2>
@@ -213,46 +284,86 @@ function InventoryManagement() {
         </form>
       )}
 
+      {/* Inventory List */}
       <div className="inventory-list">
         <h2>Current Inventory ({inventory.length} Items)</h2>
         <div className="inventory-grid">
           {inventory.length === 0 ? (
-            <p className="no-items-message">No inventory items found. Add one to get started!</p>
+            <p className="no-items-message">No inventory items found.</p>
           ) : (
-            inventory.map((item) => (
-              <div key={item._id} className="inventory-card">
-                <h3>{item.name}</h3>
-                <p><strong>Category:</strong> {item.category}</p>
-                <p><strong>Quantity:</strong> {item.quantity} {item.unit}</p>
-                <p>
-                  <strong>Availability:</strong>
-                  <span className={`inventory-status ${getStatusClass(item.availability)}`}>
-                    {item.availability}
-                  </span>
-                </p>
-                
-                <div className="inventory-actions">
-                  {currentUserRole === 'admin' ? (
-                    <>
-                      <button
-                        className="btn-update-qty"
-                        onClick={() => handleShowUpdateForm(item._id, item.quantity)}
+            inventory.map((item) => {
+              // Calculate Stats
+              const allocState = allocationData[item._id] || { siteId: "", quantity: 0 };
+              const availablePlusAllocated = (item.quantity || 0) + (item.totalAllocated || 0);
+              const remaining = availablePlusAllocated - (item.totalUsed || 0);
+              const safeRemaining = remaining < 0 ? 0 : remaining;
+
+              return (
+                <div key={item._id} className="inventory-card">
+                  <h3>{item.name}</h3>
+                  <p><strong>Category:</strong> {item.category}</p>
+                  
+                  <p>
+                    <strong>Availability: </strong>
+                    <span className={`inventory-status ${getStatusClass(item.availability)}`}>
+                      {item.availability}
+                    </span>
+                  </p>
+
+                  {/* Meta Chips */}
+                  <div className="inventory-meta-row">
+                    <span className="chip chip-available">Available: {item.quantity} {item.unit}</span>
+                    <span className="chip chip-allocated">Allocated: {item.totalAllocated || 0}</span>
+                    <span className="chip chip-used">Used: {item.totalUsed || 0}</span>
+                    <span className="chip chip-remaining">Total Left: {safeRemaining}</span>
+                  </div>
+
+                  {/* Allocation Section */}
+                  {currentUserRole === "admin" && (
+                    <div className="inventory-allocation-section">
+                      <h4>Allocate to Site</h4>
+                      <select
+                        name="siteId"
+                        value={allocState.siteId}
+                        onChange={(e) => handleAllocationChange(e, item._id)}
                       >
-                        ✏️ Update Qty
+                        <option value="">Select Site</option>
+                        {sites.map((s) => (
+                          <option key={s._id} value={s._id}>{s.siteName}</option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        name="quantity"
+                        placeholder="Qty"
+                        value={allocState.quantity}
+                        onChange={(e) => handleAllocationChange(e, item._id)}
+                        min="1"
+                      />
+                      <button type="button" className="btn-allocate" onClick={() => handleAllocateToSite(item)}>
+                        Allocate
                       </button>
-                      <button
-                        className="btn-delete"
-                        onClick={() => initiateDeleteItem(item._id, item.name)}
-                      >
-                        🗑️ Delete
-                      </button>
-                    </>
-                  ) : (
-                    <p className="view-only-tag">View Only</p>
+                    </div>
                   )}
+
+                  {/* Actions */}
+                  <div className="inventory-actions">
+                    {currentUserRole === 'admin' ? (
+                      <>
+                        <button className="btn-update-qty" onClick={() => handleShowUpdateForm(item._id, item.quantity)}>
+                          ✏️ Update Qty
+                        </button>
+                        <button className="btn-delete" onClick={() => initiateDeleteItem(item._id, item.name)}>
+                          🗑️ Delete
+                        </button>
+                      </>
+                    ) : (
+                      <p className="view-only-tag">View Only</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

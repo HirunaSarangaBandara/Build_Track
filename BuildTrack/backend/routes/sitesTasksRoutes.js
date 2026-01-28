@@ -86,16 +86,13 @@ router.get('/', async (req, res) => {
         const sites = await Site.find().sort({ startDate: -1 });
         
         // 1. Get all labors that are currently assigned to ANY site (Worker or Manager)
-        // Checks if the 'sites' array exists and is not empty.
         const labors = await Labor.find({ sites: { $exists: true, $ne: [] } }).select('name sites role category _id'); 
         
         // 2. Map labors to their siteName for efficient lookup
         const siteTeamMap = {};
         labors.forEach(labor => {
-            // Iterate through the new 'sites' array
             labor.sites.forEach(siteName => { 
                 if (!siteTeamMap[siteName]) siteTeamMap[siteName] = [];
-                // Attach the labor object (excluding sensitive data like password)
                 siteTeamMap[siteName].push(labor.toObject()); 
             });
         });
@@ -103,13 +100,9 @@ router.get('/', async (req, res) => {
         // 3. Attach worker teams to each site document
         const sitesWithTeams = sites.map(site => {
             const siteObject = site.toObject(); 
-            
-            // Get all workers and managers assigned to this site
             const fullTeam = siteTeamMap[siteObject.siteName] || [];
-            
             // Filter the team to only include Workers for the primary 'team' display on the card
             siteObject.team = fullTeam.filter(member => member.role === 'Worker');
-            
             return siteObject;
         });
 
@@ -123,16 +116,13 @@ router.get('/', async (req, res) => {
 router.post('/', upload.single('siteImage'), authAdmin, async (req, res) => {
     
     if (req.fileValidationError) {
-        // Delete the file if it was uploaded before validation failed
         if (req.file) { fs.unlinkSync(req.file.path); } 
         return res.status(400).json({ message: req.fileValidationError });
     }
     
     const { siteName, managerId, managerName, otherDetails } = req.body;
     
-    // Basic validation: siteName is required
     if (!siteName || !siteName.toString().trim()) {
-        // Delete uploaded file if present
         if (req.file) { try { fs.unlinkSync(req.file.path); } catch {} }
         return res.status(400).json({ message: "Missing required field: siteName" });
     }
@@ -143,7 +133,6 @@ router.post('/', upload.single('siteImage'), authAdmin, async (req, res) => {
 
         const newSite = new Site({ 
             siteName, 
-            // store a normalized key to avoid accidental uniqueness collisions
             siteNameKey: sanitizedKey, 
             managerId, 
             managerName, 
@@ -154,15 +143,12 @@ router.post('/', upload.single('siteImage'), authAdmin, async (req, res) => {
         });
         await newSite.save();
         
-        // Assign the site name to the manager's 'sites' array
         if (managerId) {
-            // Use $addToSet to prevent duplicate entries if the manager was somehow already assigned
             await Labor.findByIdAndUpdate(managerId, { $addToSet: { sites: siteName } }); 
         }
         
         res.status(201).json(newSite);
     } catch (err) {
-        // Clean up file on database error
         if (req.file) { 
             try { fs.unlinkSync(req.file.path); } catch (cleanupError) { console.error('Error deleting file:', cleanupError); }
         }
@@ -191,7 +177,6 @@ router.patch('/:id', authAdminOrManager, async (req, res) => {
             task.isCompleted = isCompleted;
             task.completedAt = isCompleted ? new Date() : null;
             
-            // Update currentStatus based on the next incomplete task
             const nextIncompleteTask = site.tasks.find(t => !t.isCompleted);
             if (nextIncompleteTask) {
                 site.currentStatus = `Working on: ${nextIncompleteTask.name}`;
@@ -205,11 +190,7 @@ router.patch('/:id', authAdminOrManager, async (req, res) => {
             site.updates.push({ userId, userName, comment });
         }
         
-        // 3. Handle Manager Re-assignment (Used by Admin in front-end modal)
-        // NOTE: The logic for updating the *old* and *new* manager's Labor.sites array 
-        // should ideally happen in dedicated routes to keep this PATCH simple, 
-        // as implemented in the front-end (handleManagerReassign). 
-        // We only update the Site document here.
+        // 3. Handle Manager Re-assignment
         if (managerId !== undefined && req.user.role === 'admin') {
             site.managerId = managerId;
             site.managerName = managerName;
@@ -285,8 +266,8 @@ router.delete('/:id', authAdmin, async (req, res) => {
 
         // 1. Unassign ALL labors (Workers and Managers) from the deleted site
         await Labor.updateMany(
-            { sites: siteName }, // Find any labor whose 'sites' array contains the siteName
-            { $pull: { sites: siteName } } // Pull/Remove that siteName from the array
+            { sites: siteName }, 
+            { $pull: { sites: siteName } } 
         );
         
         // 2. Delete the file from the server disk
@@ -301,6 +282,73 @@ router.delete('/:id', authAdmin, async (req, res) => {
         await Site.findByIdAndDelete(req.params.id);
 
         res.json({ message: "Site deleted successfully, and all users unassigned." });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// ===================================================================
+// NEW: Inventory allocations and usage per site
+// ===================================================================
+
+// GET /sites/inventory/:id -> allocated inventory for a site
+router.get('/inventory/:id', authAdminOrManager, async (req, res) => {
+    const siteId = req.params.id;
+
+    try {
+        const site = await Site.findById(siteId);
+        if (!site) {
+            return res.status(404).json({ message: "Site not found." });
+        }
+
+        res.json(site.allocatedInventory || []);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// PATCH /sites/inventory-usage/:id -> mark allocated inventory as used
+router.patch('/inventory-usage/:id', authAdminOrManager, async (req, res) => {
+    const siteId = req.params.id;
+    const { inventoryId, quantityUsed } = req.body;
+
+    if (!inventoryId || typeof quantityUsed !== 'number' || quantityUsed <= 0) {
+        return res.status(400).json({
+            message: "inventoryId and a positive quantityUsed are required.",
+        });
+    }
+
+    try {
+        const site = await Site.findById(siteId);
+        if (!site) {
+            return res.status(404).json({ message: "Site not found." });
+        }
+
+        const allocation = site.allocatedInventory.find(
+            (a) => a.inventoryItem.toString() === inventoryId.toString()
+        );
+        if (!allocation) {
+            return res.status(404).json({
+                message: "No allocation found for this inventory item on this site.",
+            });
+        }
+
+        const availableForUse = allocation.allocatedQuantity - allocation.usedQuantity;
+
+        if (quantityUsed > availableForUse) {
+            return res.status(400).json({
+                message: "Usage exceeds allocated remaining quantity.",
+                remaining: availableForUse,
+            });
+        }
+
+        allocation.usedQuantity += quantityUsed;
+        await site.save();
+
+        res.json({
+            message: "Inventory usage recorded successfully.",
+            allocation,
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
