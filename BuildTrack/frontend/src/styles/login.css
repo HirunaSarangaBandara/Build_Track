@@ -1,168 +1,187 @@
-/* Background container */
-.login-page {
-  position: fixed;        
-  top: 0;
-  left: 0;
-  height: 100vh;
+.login-root {
+  min-height: 100vh;
   width: 100%;
-  overflow: hidden;
+  background: linear-gradient(135deg, #e5ecff 0%, #f5f7ff 40%, #ffffff 100%);
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-family: "Segoe UI", sans-serif;
-  background: transparent !important; 
-}
-
-/* 🔹 Lottie Background */
-.login-lottie {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;       
-  opacity: 0.9;            
-  z-index: -10;            
-  pointer-events: none;
-}
-
-/* Glass login card */
-.login-container {
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  padding: 40px;
-  width: 380px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(14px); 
-  -webkit-backdrop-filter: blur(14px);
-  color: #1a1a1a;
-  transition: all 0.3s ease-in-out;
+  justify-content: center;
   position: relative;
-  z-index: 10;    
+  padding: 20px;
+  box-sizing: border-box;
+
+  /* modern font but scoped only to login */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
-/* Language selector (top-right of the card) */
-.language-select {
+/* Top-right language selector */
+.login-lang-wrapper {
   position: absolute;
-  top: 12px;
-  right: 14px;
-  padding: 6px 8px;
+  top: 16px;
+  right: 16px;
+}
+
+.language-select {
+  padding: 6px 10px;
   border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.08);
-  background: rgba(255,255,255,0.9);
-  font-size: 13px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-size: 0.9rem;
 }
 
-.login-container:hover {
-  transform: scale(1.02);
+/* Main card */
+.login-card {
+  background: #ffffff;
+  max-width: 960px;
+  width: 100%;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+  display: flex;
+  overflow: hidden;
 }
 
+/* Left illustration */
+.login-left {
+  flex: 1.1;
+  background: linear-gradient(135deg, #1d4ed8, #312e81);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+}
+
+.login-animation {
+  max-width: 320px;
+  width: 100%;
+}
+
+/* Right form side */
+.login-right {
+  flex: 1;
+  padding: 32px 32px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Greeting block */
+.login-header h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  color: #111827;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.login-subtitle {
+  margin: 8px 0 24px;
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Error message */
+.login-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+/* Form */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
-.login-form h1 {
-  text-align: center;
-  font-size: 24px;
-  color: #3020ba;
-  margin-bottom: 5px;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #374151;
 }
 
-.login-form h2 {
-  text-align: center;
-  font-size: 18px;
-  color: #3020ba;
-  margin-bottom: 15px;
-}
-
-/* Inputs */
-.login-form input {
-  padding: 12px;
-  border: none;
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
   border-radius: 8px;
-  font-size: 15px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #222;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
   outline: none;
-  transition: 0.3s;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.login-form input:focus {
-  background: #ffffff;
-  box-shadow: 0 0 8px rgba(0, 92, 151, 0.6);
+.form-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
 }
 
-/* Password field */
-.password-field {
-  position: relative;
+/* Password field with icon */
+.password-wrapper {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
-.password-field input {
-  width: 100%;
-  padding-right: 40px;
+.password-wrapper input {
+  flex: 1;
 }
 
-.password-field span {
-  position: absolute;
-  right: 12px;
+.toggle-password {
+  border: none;
+  background: #e5e7eb;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 18px;
-  color: #005c97;
-  user-select: none;
-  transition: 0.2s;
-}
-
-.password-field span:hover {
-  color: #002f5e;
 }
 
 /* Button */
-.login-form button {
-  padding: 12px;
-  background: linear-gradient(to right, #005c97, #363795);
-  color: white;
+.login-button {
+  margin-top: 6px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 999px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  background: linear-gradient(135deg, #1d4ed8, #312e81);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.98rem;
   cursor: pointer;
-  transition: 0.3s;
-  font-weight: bold;
+  transition: transform 0.08s ease, box-shadow 0.12s ease, opacity 0.12s ease;
 }
 
-.login-form button:hover {
-  background: linear-gradient(to right, #363795, #005c97);
-  transform: translateY(-2px);
+.login-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
 }
 
-.login-form button:disabled {
+.login-button:disabled {
   opacity: 0.7;
-  cursor: not-allowed;
+  cursor: default;
 }
 
-.error {
-  color: #ffdddd;
-  background: rgba(255, 0, 0, 0.15);
-  font-size: 14px;
-  text-align: center;
-  padding: 8px;
-  border-radius: 5px;
-}
-
-/* 📱 Mobile Responsive */
-@media (max-width: 480px) {
-  .login-container {
-    width: 92%;
-    padding: 30px;
+/* Responsive: stack on narrow screens */
+@media (max-width: 768px) {
+  .login-card {
+    flex-direction: column;
   }
 
-  .login-lottie {
-    opacity: 1; 
-    object-fit: cover;
+  .login-left {
+    padding: 24px 16px;
+  }
+
+  .login-right {
+    padding: 24px 18px 28px;
+  }
+
+  .login-header h1 {
+    font-size: 1.6rem;
   }
 }

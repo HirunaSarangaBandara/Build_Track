@@ -5,7 +5,6 @@ import { io } from "socket.io-client";
 import "../styles/communication.css";
 import { useLanguage } from "../contexts/LanguageContext";
 
-// Socket connection
 const socket = io("http://localhost:5000");
 
 const Communication = () => {
@@ -19,6 +18,8 @@ const Communication = () => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
+
+  // controls mobile slide state
   const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
 
   const selectedUserRef = useRef(null);
@@ -31,7 +32,6 @@ const Communication = () => {
     selectedUserRef.current = selectedUser;
   }, [selectedUser]);
 
-  // Fetch contacts
   const fetchContacts = useCallback(async () => {
     try {
       const { data } = await API.get("/messages/recipients");
@@ -41,7 +41,6 @@ const Communication = () => {
     }
   }, []);
 
-  // Socket + initial load
   useEffect(() => {
     fetchContacts();
 
@@ -49,13 +48,14 @@ const Communication = () => {
     if (uid) socket.emit("join", uid);
 
     socket.on("new_message", (msg) => {
-      // msg.sender may be populated object { _id, name } or an ObjectId string
       const senderId = String(msg.sender && (msg.sender._id || msg.sender));
 
-      // Update UI: if chat with sender is open, append message
       if (String(selectedUserRef.current?._id) === senderId) {
-        // Normalize message shape: ensure sender is id and provide senderName for display
-        const normalized = { ...msg, sender: senderId, senderName: msg.sender?.name || msg.senderName };
+        const normalized = {
+          ...msg,
+          sender: senderId,
+          senderName: msg.sender?.name || msg.senderName,
+        };
         setMessages((prev) => [...prev, normalized]);
         API.put(`/messages/read/${senderId}`);
       } else {
@@ -72,15 +72,13 @@ const Communication = () => {
     return () => socket.off("new_message");
   }, [fetchContacts]);
 
-  // Auto scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Select user
   const handleSelect = async (user) => {
     setSelectedUser(user);
-    setIsMobileChatOpen(true);
+    setIsMobileChatOpen(true); // open chat view on mobile
 
     try {
       const { data } = await API.get(`/messages/chat/${user._id}`);
@@ -99,9 +97,9 @@ const Communication = () => {
     }
   };
 
-  // Send message
   const handleSend = async (e) => {
     e.preventDefault();
+    if (!selectedUser) return;
     if (!text.trim() && !file) return;
 
     const formData = new FormData();
@@ -124,13 +122,16 @@ const Communication = () => {
   };
 
   const handleBack = () => {
+    // in mobile: slide back to contacts list
     setIsMobileChatOpen(false);
   };
 
   return (
     <div className="comm-page">
+      <h1>{t("Communication") || "Communication"}</h1>
+
       <div
-        className={`comm-glass-container ${
+        className={`comm-card ${
           isMobileChatOpen ? "mobile-chat-active" : ""
         }`}
       >
@@ -238,7 +239,8 @@ const Communication = () => {
               <form className="comm-input-bar" onSubmit={handleSend}>
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current.click()}
+                  className="comm-attach-btn"
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   📎
                 </button>
@@ -260,7 +262,10 @@ const Communication = () => {
           ) : (
             <div className="comm-empty-state">
               <div className="empty-visual">💬</div>
-              <p>{t("communicationHint") || "Select a user to start chatting"}</p>
+              <p>
+                {t("communicationHint") ||
+                  "Select a user to start chatting"}
+              </p>
             </div>
           )}
         </main>

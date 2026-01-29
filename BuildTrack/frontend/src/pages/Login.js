@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../services/api";
 import Lottie from "react-lottie-player";
+
 import animationData from "../assets/City Building.json";
 import "../styles/login.css";
+
 import { useLanguage } from "../contexts/LanguageContext";
+import { login as authLogin } from "../services/auth";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -12,13 +14,9 @@ function Login() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { t } = useLanguage();
 
-  const TOKEN_KEY = "authToken";
-  const ROLE_KEY = "userRole";
-  const NAME_KEY = "userName";
-  const ID_KEY = "userId";
+  const navigate = useNavigate();
+  const { t, lang, setLang } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,18 +29,10 @@ function Login() {
 
     setLoading(true);
     try {
-      const res = await API.post("/auth/login", { username, password });
-      const { token, role, name, id } = res.data;
-
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(ROLE_KEY, role);
-      localStorage.setItem(NAME_KEY, name);
-      localStorage.setItem(ID_KEY, id);
-
+      await authLogin(username, password);
       navigate("/dashboard");
     } catch (err) {
-      const msg =
-        err.response?.data?.message || t("invalidCredentials");
+      const msg = err.message || t("invalidCredentials");
       setError(msg);
     } finally {
       setLoading(false);
@@ -50,74 +40,84 @@ function Login() {
   };
 
   return (
-    <div className="login-page">
+    <div className="login-root">
+      {/* Top-right language selector */}
+      <div className="login-lang-wrapper">
+        <select
+          className="language-select"
+          value={lang}
+          onChange={(e) => setLang(e.target.value)}
+          aria-label={t("loginTitle") + " language selector"}
+        >
+          <option value="en">English</option>
+          <option value="ta">தமிழ்</option>
+          <option value="si">සිංහල</option>
+        </select>
+      </div>
 
-      {/* 🔹 Lottie Animated Background */}
-      <Lottie
-        loop
-        play
-        animationData={animationData}
-        className="login-lottie"
-      />
-
-      <div className="login-container">
-        <form className="login-form" onSubmit={handleSubmit}>
-          <LanguageSelector />
-          <h1>{t("welcome")}</h1>
-          <h2>{t("loginTitle")}</h2>
-
-          <input
-            type="text"
-            placeholder={t("placeholderUsername")}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
+      <div className="login-card">
+        <div className="login-left">
+          <Lottie
+            loop
+            play
+            animationData={animationData}
+            className="login-animation"
           />
+        </div>
 
-          <div className="password-field">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder={t("placeholderPassword")}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <span
-              className="toggle-password"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
+        <div className="login-right">
+          {/* Greeting block */}
+          <div className="login-header">
+            <h1>Welcome to BuildTrack</h1>
+            <p className="login-subtitle">
+              Sign in with your username and password to manage your projects.
+            </p>
           </div>
 
-          {error && <p className="error">{error}</p>}
+          {error && <div className="login-error">{error}</div>}
 
-          <button type="submit" disabled={loading}>
-            {loading ? t("loggingIn") : t("loginButton")}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-group">
+              <label>{t("placeholderUsername")}</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t("placeholderUsername")}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>{t("placeholderPassword")}</label>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={t("placeholderPassword")}
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="login-button"
+              disabled={loading}
+            >
+              {loading ? t("loggingIn") : t("loginButton")}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
 }
 
 export default Login;
-
-function LanguageSelector() {
-  const { lang, setLang, t } = useLanguage();
-
-  return (
-    <div style={{ width: "100%" }}>
-      <select
-        className="language-select"
-        value={lang}
-        onChange={(e) => setLang(e.target.value)}
-        aria-label={t("loginTitle") + " language selector"}
-      >
-        <option value="en">English</option>
-        <option value="ta">தமிழ்</option>
-        <option value="si">සිංහල</option>
-      </select>
-    </div>
-  );
-}

@@ -1,6 +1,5 @@
 import axios from "axios";
-// Import getToken as a named export
-import { getToken } from "./auth"; 
+import { getToken, logout } from "./auth";
 
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
@@ -12,7 +11,7 @@ const API = axios.create({
 // Attach token automatically to every request
 API.interceptors.request.use(
   (req) => {
-    const token = getToken(); 
+    const token = getToken();
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,11 +29,11 @@ API.interceptors.response.use(
       (error.response.status === 401 || error.response.status === 403)
     ) {
       console.warn("Session expired or unauthorized. Redirecting to login.");
-      // Call a full logout function here
-      // window.location.href = "/"; 
+      logout();
+      window.location.href = "/";
     }
     return Promise.reject(error);
   }
 );
 
-export default API; 
+export default API;

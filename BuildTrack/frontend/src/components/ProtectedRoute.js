@@ -4,7 +4,11 @@ import { getToken } from "../services/auth";
 
 const ProtectedRoute = ({ children }) => {
   const token = getToken();
-  if (!token) return <Navigate to="/" replace />;
+
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 };
 
